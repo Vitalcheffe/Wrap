@@ -1,0 +1,31 @@
+[package]
+name = "wrap-governor"
+version = "1.0.0"
+edition = "2021"
+description = "WRAP Safety Governor - Zero Trust Security Layer"
+license = "MIT"
+keywords = ["ai", "agent", "sandbox", "security", "governor"]
+
+[lib]
+name = "wrap_governor"
+path = "src/lib.rs"
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+sysinfo = "0.30"
+regex = "1.10"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = true

@@ -1,0 +1,187 @@
+import { defineConfig } from 'tsup';
+
+export default defineConfig([
+  // Main entry point
+  {
+    entry: ['src/index.ts'],
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: true,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+    banner: {
+      js: `/**
+ * @license MIT
+ * @copyright 2024 WRAP Nebula Team
+ * @module @wrap-nebula/js-sdk
+ * @description Complete JavaScript/TypeScript SDK for WRAP Nebula AI Agent Sandbox Framework
+ */`,
+    },
+    external: [
+      'openai',
+      '@anthropic-ai/sdk',
+      'ws',
+      'events',
+      'crypto',
+      'fs',
+      'path',
+      'os',
+      'child_process',
+      'stream',
+      'http',
+      'https',
+      'url',
+      'util',
+      'buffer',
+    ],
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),
+    },
+    onSuccess: async () => {
+      console.log('✅ Build completed successfully!');
+    },
+  },
+  // Client module
+  {
+    entry: { client: 'src/client.ts' },
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+    external: [
+      'openai',
+      '@anthropic-ai/sdk',
+      'ws',
+      'events',
+      'crypto',
+    ],
+  },
+  // Sandbox module
+  {
+    entry: { 'sandbox/index': 'src/sandbox/index.ts' },
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+    external: [
+      'vm',
+      'v8',
+      'worker_threads',
+      'child_process',
+      'fs',
+      'path',
+      'os',
+    ],
+  },
+  // Agent module
+  {
+    entry: { 'agent/index': 'src/agent/index.ts' },
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+    external: [
+      'openai',
+      '@anthropic-ai/sdk',
+    ],
+  },
+  // Tools module
+  {
+    entry: { 'tools/index': 'src/tools/index.ts' },
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+    external: [
+      'fs',
+      'path',
+      'child_process',
+      'http',
+      'https',
+      'url',
+    ],
+  },
+  // Safety module
+  {
+    entry: { 'safety/index': 'src/safety/index.ts' },
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+  },
+  // MCP module
+  {
+    entry: { 'mcp/index': 'src/mcp/index.ts' },
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+    external: [
+      'ws',
+      'http',
+      'https',
+    ],
+  },
+  // Telemetry module
+  {
+    entry: { 'telemetry/index': 'src/telemetry/index.ts' },
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    minify: false,
+    shims: true,
+    target: 'es2022',
+    outDir: 'dist',
+    treeshake: true,
+    external: [
+      '@opentelemetry/api',
+      '@opentelemetry/sdk-trace-base',
+      '@opentelemetry/sdk-metrics',
+      '@opentelemetry/resources',
+      '@opentelemetry/semantic-conventions',
+    ],
+  },
+]);
