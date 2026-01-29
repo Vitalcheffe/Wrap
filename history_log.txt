@@ -336,3 +336,4 @@
 // Logic update 16 for telemetry
 // Logic update 17 for telemetry
 // Logic update 18 for sdk-ts
+// Logic update 19 for mcp-proto
