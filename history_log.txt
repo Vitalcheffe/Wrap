@@ -343,3 +343,4 @@
 // Logic update 23 for rust-kernel
 // Logic update 24 for safety-gov
 // Logic update 25 for sandbox
+// Logic update 26 for mcp-proto
