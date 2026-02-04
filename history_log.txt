@@ -371,3 +371,4 @@
 // Logic update 51 for core
 // Logic update 52 for sdk-ts
 // Logic update 53 for safety-gov
+// Logic update 54 for sdk-python
