@@ -368,3 +368,4 @@
 // Logic update 48 for rust-kernel
 // Logic update 49 for vfs
 // Logic update 50 for sandbox
+// Logic update 51 for core
