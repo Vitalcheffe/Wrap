@@ -390,3 +390,4 @@
 // Logic update 70 for sdk-ts
 // Logic update 71 for core
 // Logic update 72 for sandbox
+// Logic update 73 for vfs
