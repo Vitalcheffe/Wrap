@@ -406,3 +406,4 @@
 // Logic update 86 for core
 // Logic update 87 for mcp-proto
 // Logic update 88 for sdk-ts
+// Logic update 89 for rust-kernel
