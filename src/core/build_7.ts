@@ -1,1 +1,1 @@
-export const BUILD_ID_232 = '232';
+export const BUILD_ID_247 = '247';

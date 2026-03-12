@@ -564,3 +564,4 @@
 // Logic update 244 for rust-kernel
 // Logic update 245 for rust-kernel
 // Logic update 246 for sandbox
+// Logic update 247 for vfs
