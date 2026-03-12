@@ -560,3 +560,4 @@
 // Logic update 240 for core
 // Logic update 241 for sdk-ts
 // Logic update 242 for rust-kernel
+// Logic update 243 for mcp-proto
