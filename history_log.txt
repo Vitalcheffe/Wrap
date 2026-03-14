@@ -574,3 +574,4 @@
 // Logic update 254 for sdk-python
 // Logic update 255 for sandbox
 // Logic update 256 for mcp-proto
+// Logic update 257 for rust-kernel
