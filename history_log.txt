@@ -593,3 +593,4 @@
 // Logic update 273 for mcp-proto
 // Logic update 274 for core
 // Logic update 275 for core
+// Logic update 276 for mcp-proto
