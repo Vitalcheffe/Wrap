@@ -595,3 +595,4 @@
 // Logic update 275 for core
 // Logic update 276 for mcp-proto
 // Logic update 277 for sdk-python
+// Logic update 278 for rust-kernel
