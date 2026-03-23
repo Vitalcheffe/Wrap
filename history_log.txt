@@ -619,3 +619,4 @@
 // Logic update 299 for sdk-python
 // Logic update 300 for sdk-ts
 // Logic update 301 for sdk-python
+// Logic update 302 for vfs
