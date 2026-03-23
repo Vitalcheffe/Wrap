@@ -622,3 +622,4 @@
 // Logic update 302 for vfs
 // Logic update 303 for core
 // Logic update 304 for dashboard
+// Logic update 305 for mcp-proto
