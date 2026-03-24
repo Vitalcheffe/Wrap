@@ -625,3 +625,4 @@
 // Logic update 305 for mcp-proto
 // Logic update 306 for dashboard
 // Logic update 307 for vfs
+// Logic update 308 for telemetry
