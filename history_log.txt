@@ -629,3 +629,4 @@
 // Logic update 309 for sandbox
 // Logic update 310 for sdk-ts
 // Logic update 311 for sdk-python
+// Logic update 312 for rust-kernel
