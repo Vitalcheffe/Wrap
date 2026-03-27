@@ -1,0 +1,172 @@
+#!/bin/bash
+#
+# WRAP NEBULA v2.0 - CLI Tool
+# Unified command-line interface for development and deployment
+#
+
+set -e
+
+NEBULA_VERSION="2.0.0"
+NEBULA_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+print_banner() {
+    echo -e "${CYAN}"
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║                                                              ║"
+    echo "║   ██╗    ██╗    ██████╗ ███████╗██╗   ██╗    ██████╗  █████╗ ║"
+    echo "║   ██║    ██║    ██╔══██╗██╔════╝██║   ██║    ██╔══██╗██╔══██╗║"
+    echo "║   ██║ █╗ ██║    ██████╔╝█████╗  ██║   ██║    ██████╔╝███████║║"
+    echo "║   ██║███╗██║    ██╔══██╗██╔══╝  ╚██╗ ██╔╝    ██╔══██╗██╔══██║║"
+    echo "║   ╚███╔███╔╝    ██║  ██║███████╗ ╚████╔╝     ██║  ██║██║  ██║║"
+    echo "║    ╚══╝╚══╝     ╚═╝  ╚═╝╚══════╝  ╚═══╝      ╚═╝  ╚═╝╚═╝  ╚═╝║"
+    echo "║                                                              ║"
+    echo "║   NEBULA v${NEBULA_VERSION} - Zero Trust AI Agent Framework           ║"
+    echo "║                                                              ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    echo -e "${NC}"
+}
+
+print_help() {
+    echo "Usage: nebula <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  dev       Start development servers (Core + War Room)"
+    echo "  build     Build all packages"
+    echo "  test      Run all tests"
+    echo "  start     Start production server"
+    echo "  clean     Clean build artifacts"
+    echo "  version   Show version"
+    echo "  help      Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  nebula dev          # Start development environment"
+    echo "  nebula build        # Build all packages"
+    echo "  nebula test         # Run tests"
+}
+
+cmd_dev() {
+    echo -e "${GREEN}Starting development environment...${NC}"
+    
+    # Check if dependencies are installed
+    if [ ! -d "$NEBULA_DIR/node_modules" ]; then
+        echo -e "${YELLOW}Installing dependencies...${NC}"
+        cd "$NEBULA_DIR" && npm install
+    fi
+    
+    # Start Core server in background
+    echo -e "${BLUE}Starting Core server on port 3777...${NC}"
+    cd "$NEBULA_DIR/packages/core" && npm run dev &
+    CORE_PID=$!
+    
+    # Wait for Core to start
+    sleep 2
+    
+    # Start War Room
+    echo -e "${BLUE}Starting War Room dashboard on port 3000...${NC}"
+    cd "$NEBULA_DIR/apps/war-room" && npm run dev &
+    WARROOM_PID=$!
+    
+    echo ""
+    echo -e "${GREEN}Development environment ready!${NC}"
+    echo "  Core API:      http://localhost:3777"
+    echo "  War Room:      http://localhost:3000"
+    echo "  Health Check:  http://localhost:3777/health"
+    echo ""
+    echo "Press Ctrl+C to stop all services"
+    
+    # Wait for processes
+    wait $CORE_PID $WARROOM_PID
+}
+
+cmd_build() {
+    echo -e "${GREEN}Building all packages...${NC}"
+    
+    # Build Core
+    echo -e "${BLUE}Building Core...${NC}"
+    cd "$NEBULA_DIR/packages/core" && npm run build
+    
+    # Build JS SDK
+    echo -e "${BLUE}Building JavaScript SDK...${NC}"
+    cd "$NEBULA_DIR/packages/js-sdk" && npm run build
+    
+    # Build War Room
+    echo -e "${BLUE}Building War Room...${NC}"
+    cd "$NEBULA_DIR/apps/war-room" && npm run build
+    
+    echo -e "${GREEN}Build complete!${NC}"
+}
+
+cmd_test() {
+    echo -e "${GREEN}Running tests...${NC}"
+    
+    # Core tests
+    echo -e "${BLUE}Testing Core...${NC}"
+    cd "$NEBULA_DIR/packages/core" && npm test
+    
+    # Python tests
+    echo -e "${BLUE}Testing Python SDK...${NC}"
+    cd "$NEBULA_DIR/packages/python-sdk" && python -m pytest
+    
+    echo -e "${GREEN}All tests passed!${NC}"
+}
+
+cmd_start() {
+    echo -e "${GREEN}Starting production server...${NC}"
+    
+    cd "$NEBULA_DIR/packages/core"
+    node dist/server.js
+}
+
+cmd_clean() {
+    echo -e "${YELLOW}Cleaning build artifacts...${NC}"
+    
+    rm -rf "$NEBULA_DIR/packages/core/dist"
+    rm -rf "$NEBULA_DIR/packages/js-sdk/dist"
+    rm -rf "$NEBULA_DIR/apps/war-room/.next"
+    rm -rf "$NEBULA_DIR/node_modules"
+    
+    echo -e "${GREEN}Clean complete!${NC}"
+}
+
+# Main
+case "${1:-}" in
+    dev)
+        print_banner
+        cmd_dev
+        ;;
+    build)
+        print_banner
+        cmd_build
+        ;;
+    test)
+        print_banner
+        cmd_test
+        ;;
+    start)
+        print_banner
+        cmd_start
+        ;;
+    clean)
+        cmd_clean
+        ;;
+    version|--version|-v)
+        echo "WRAP NEBULA v${NEBULA_VERSION}"
+        ;;
+    help|--help|-h)
+        print_banner
+        print_help
+        ;;
+    *)
+        print_banner
+        print_help
+        exit 1
+        ;;
+esac

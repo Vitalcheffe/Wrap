@@ -1,0 +1,33 @@
+{
+  "name": "wrap-nebula-v2",
+  "version": "2.0.0",
+  "description": "WRAP NEBULA v2.0 - Zero Trust AI Agent Framework",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "dev": "concurrently \"npm run dev --workspace=@wrap-nebula/core\" \"npm run dev --workspace=@wrap-nebula/war-room\"",
+    "clean": "npm run clean --workspaces && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "llm",
+    "framework",
+    "zero-trust",
+    "wrap"
+  ],
+  "author": "WRAP NEBULA Team",
+  "license": "MIT"
+}

@@ -1,152 +1,160 @@
 """
-Exceptions for WRAP SDK
+WRAP NEBULA v2.0 - Exceptions
+Custom exception classes for the SDK
 """
 
-from typing import Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 
-class WRAPError(Exception):
-    """Base exception for all WRAP errors"""
+class GhostError(Exception):
+    """Base exception for Ghost SDK errors"""
 
-    def __init__(self, message: str, code: Optional[str] = None, details: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self,
+        message: str,
+        code: str = "UNKNOWN_ERROR",
+        details: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(message)
         self.message = message
-        self.code = code or "WRAP_ERROR"
+        self.code = code
         self.details = details or {}
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "error": self.code,
-            "message": self.message,
-            "details": self.details
+            "error": self.message,
+            "code": self.code,
+            "details": self.details,
         }
 
 
-class ConfigurationError(WRAPError):
-    """Configuration error"""
+class ValidationError(GhostError):
+    """Validation error"""
 
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
-        super().__init__(message, "CONFIGURATION_ERROR", details)
+        super().__init__(message, "VALIDATION_ERROR", details)
 
 
-class ConnectionError(WRAPError):
+class SecurityError(GhostError):
+    """Security-related error"""
+
+    def __init__(
+        self,
+        message: str,
+        code: str = "SECURITY_ERROR",
+        details: Optional[Dict[str, Any]] = None,
+        detections: Optional[List[Dict[str, Any]]] = None,
+    ):
+        super().__init__(message, code, details)
+        self.detections = detections or []
+
+
+class ConnectionError(GhostError):
     """Connection error"""
 
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(message, "CONNECTION_ERROR", details)
 
 
-class SandboxError(WRAPError):
-    """Sandbox-related error"""
+class TimeoutError(GhostError):
+    """Timeout error"""
+
+    def __init__(self, message: str, timeout: Optional[float] = None):
+        details = {"timeout": timeout} if timeout else {}
+        super().__init__(message, "TIMEOUT_ERROR", details)
+        self.timeout = timeout
+
+
+class QuotaError(GhostError):
+    """Quota exceeded error"""
+
+    def __init__(
+        self,
+        message: str,
+        code: str = "QUOTA_ERROR",
+        retry_after: Optional[int] = None,
+    ):
+        details = {"retryAfter": retry_after} if retry_after else {}
+        super().__init__(message, code, details)
+        self.retry_after = retry_after
+
+
+class SandboxError(GhostError):
+    """Sandbox execution error"""
 
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(message, "SANDBOX_ERROR", details)
 
 
-class SandboxNotRunningError(SandboxError):
-    """Sandbox is not running"""
-
-    def __init__(self, message: str):
-        super().__init__(message, {"reason": "sandbox_not_running"})
-
-
-class AgentError(WRAPError):
-    """Agent-related error"""
-
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
-        super().__init__(message, "AGENT_ERROR", details)
-
-
-class ExecutionError(WRAPError):
-    """Execution error"""
-
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
-        super().__init__(message, "EXECUTION_ERROR", details)
-
-
-class MaxIterationsExceeded(ExecutionError):
-    """Maximum iterations exceeded"""
-
-    def __init__(self, message: str):
-        super().__init__(message, {"reason": "max_iterations_exceeded"})
-
-
-class PermissionDenied(WRAPError):
-    """Permission denied error"""
-
-    def __init__(self, message: str, permission: Optional[str] = None):
-        super().__init__(message, "PERMISSION_DENIED", {"permission": permission})
-
-
-class TimeoutError(WRAPError):
-    """Timeout error"""
-
-    def __init__(self, message: str, timeout_ms: Optional[int] = None):
-        super().__init__(message, "TIMEOUT_ERROR", {"timeout_ms": timeout_ms})
-
-
-class ResourceLimitExceeded(WRAPError):
-    """Resource limit exceeded"""
-
-    def __init__(self, message: str, resource: Optional[str] = None, used: Optional[int] = None, limit: Optional[int] = None):
-        super().__init__(message, "RESOURCE_LIMIT_EXCEEDED", {
-            "resource": resource,
-            "used": used,
-            "limit": limit
-        })
-
-
-class ValidationError(WRAPError):
-    """Validation error"""
-
-    def __init__(self, message: str, field: Optional[str] = None, value: Optional[Any] = None):
-        super().__init__(message, "VALIDATION_ERROR", {"field": field, "value": str(value) if value else None})
-
-
-class ToolError(WRAPError):
+class ToolError(GhostError):
     """Tool execution error"""
 
-    def __init__(self, message: str, tool_name: Optional[str] = None, details: Optional[Dict[str, Any]] = None):
-        super().__init__(message, "TOOL_ERROR", {"tool": tool_name, **(details or {})})
+    def __init__(
+        self,
+        message: str,
+        tool_name: str,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        details = details or {}
+        details["toolName"] = tool_name
+        super().__init__(message, "TOOL_ERROR", details)
+        self.tool_name = tool_name
 
 
-class ToolNotFoundError(ToolError):
-    """Tool not found"""
+class ProviderError(GhostError):
+    """Provider error"""
 
-    def __init__(self, tool_name: str):
-        super().__init__(f"Tool not found: {tool_name}", tool_name)
+    def __init__(
+        self,
+        message: str,
+        provider: str,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        details = details or {}
+        details["provider"] = provider
+        super().__init__(message, "PROVIDER_ERROR", details)
+        self.provider = provider
 
 
-class RateLimitExceeded(WRAPError):
-    """Rate limit exceeded"""
+class RateLimitError(QuotaError):
+    """Rate limit exceeded error"""
 
     def __init__(self, message: str, retry_after: Optional[int] = None):
-        super().__init__(message, "RATE_LIMIT_EXCEEDED", {"retry_after": retry_after})
+        super().__init__(message, "RATE_LIMIT_ERROR", retry_after)
 
 
-class ContentFiltered(WRAPError):
-    """Content was filtered"""
+class PolicyError(GhostError):
+    """Policy violation error"""
 
-    def __init__(self, message: str, categories: Optional[list] = None):
-        super().__init__(message, "CONTENT_FILTERED", {"categories": categories})
-
-
-class NetworkError(WRAPError):
-    """Network error"""
-
-    def __init__(self, message: str, url: Optional[str] = None, status_code: Optional[int] = None):
-        super().__init__(message, "NETWORK_ERROR", {"url": url, "status_code": status_code})
-
-
-class AuthenticationError(WRAPError):
-    """Authentication error"""
-
-    def __init__(self, message: str = "Authentication failed"):
-        super().__init__(message, "AUTHENTICATION_ERROR")
+    def __init__(
+        self,
+        message: str,
+        rule: str,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        details = details or {}
+        details["rule"] = rule
+        super().__init__(message, "POLICY_ERROR", details)
+        self.rule = rule
 
 
-class NotFoundError(WRAPError):
-    """Resource not found"""
+class AgentError(GhostError):
+    """Agent-related error"""
 
-    def __init__(self, message: str, resource_type: Optional[str] = None, resource_id: Optional[str] = None):
-        super().__init__(message, "NOT_FOUND", {"type": resource_type, "id": resource_id})
+    def __init__(
+        self,
+        message: str,
+        agent_id: str,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        details = details or {}
+        details["agentId"] = agent_id
+        super().__init__(message, "AGENT_ERROR", details)
+        self.agent_id = agent_id
+
+
+class ConfigurationError(GhostError):
+    """Configuration error"""
+
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+        super().__init__(message, "CONFIGURATION_ERROR", details)

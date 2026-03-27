@@ -1,61 +1,61 @@
 """
-WRAP Ghost SDK - Universal AI Agent Runtime
-============================================
+WRAP NEBULA v2.0 - Python SDK Ghost Client
+Thin HTTP client for the Core Engine
 
-The Ghost SDK provides a simple 2-line interface to WRAP:
-
-    from wrap_ghost import WRAP, Sandbox
-    result = await WRAP().execute("Your prompt here")
-
-This module exports all public API components.
+A minimal, thin client that delegates all agent logic to the Core Engine.
+Handles: HTTP communication, input sanitization, streaming, error handling
 """
 
-__version__ = "1.0.0"
-__author__ = "WRAP Team"
-__license__ = "MIT"
+__version__ = "2.0.0"
+__author__ = "WRAP NEBULA Team"
 
-from .client import WRAP, WRAPClient
-from .sandbox import Sandbox, SandboxConfig, SandboxType, SandboxStatus
-from .agent import Agent, AgentConfig, AgentState
-from .tools import (
-    Tool, ToolRegistry, ToolBuilder,
-    FileTool, ShellTool, WebTool, CodeTool, MemoryTool
-)
-from .safety import Boundaries, Permission, SafetyManager
+from .client import Ghost, GhostConfig, RunOptions
 from .types import (
-    Message, MessageRole, ContentPart,
-    ToolCall, ToolResult, ExecutionState, ExecutionStatus,
-    ResourceUsage, SandboxInfo, TokenUsage, CostUsage
+    AgentEvent,
+    ProviderResponse,
+    TokenUsage,
+    ToolDefinition,
+    ToolCall,
+    ToolResult,
+    Message,
+    ContentBlock,
 )
+from .sanitizer import InputSanitizer, SanitizationResult
 from .exceptions import (
-    WRAPError, SandboxError, AgentError, ExecutionError,
-    PermissionDenied, TimeoutError, ResourceLimitExceeded,
-    ValidationError, ToolError
+    GhostError,
+    ValidationError,
+    SecurityError,
+    ConnectionError,
+    TimeoutError,
+    QuotaError,
+    SandboxError,
 )
 
 __all__ = [
-    # Main classes
-    'WRAP', 'WRAPClient',
-    'Sandbox', 'SandboxConfig', 'SandboxType', 'SandboxStatus',
-    'Agent', 'AgentConfig', 'AgentState',
-
-    # Tools
-    'Tool', 'ToolRegistry', 'ToolBuilder',
-    'FileTool', 'ShellTool', 'WebTool', 'CodeTool', 'MemoryTool',
-
-    # Safety
-    'Boundaries', 'Permission', 'SafetyManager',
-
+    # Main client
+    "Ghost",
+    "GhostConfig",
+    "RunOptions",
     # Types
-    'Message', 'MessageRole', 'ContentPart',
-    'ToolCall', 'ToolResult', 'ExecutionState', 'ExecutionStatus',
-    'ResourceUsage', 'SandboxInfo', 'TokenUsage', 'CostUsage',
-
+    "AgentEvent",
+    "ProviderResponse",
+    "TokenUsage",
+    "ToolDefinition",
+    "ToolCall",
+    "ToolResult",
+    "Message",
+    "ContentBlock",
+    # Sanitizer
+    "InputSanitizer",
+    "SanitizationResult",
     # Exceptions
-    'WRAPError', 'SandboxError', 'AgentError', 'ExecutionError',
-    'PermissionDenied', 'TimeoutError', 'ResourceLimitExceeded',
-    'ValidationError', 'ToolError',
-
+    "GhostError",
+    "ValidationError",
+    "SecurityError",
+    "ConnectionError",
+    "TimeoutError",
+    "QuotaError",
+    "SandboxError",
     # Version
-    '__version__', '__author__', '__license__',
+    "__version__",
 ]

@@ -1,31 +1,35 @@
 [package]
 name = "wrap-governor"
-version = "1.0.0"
+version = "2.0.0"
 edition = "2021"
-description = "WRAP Safety Governor - Zero Trust Security Layer"
+description = "WRAP NEBULA Rust Safety Governor - Zero Trust security enforcement"
+authors = ["WRAP NEBULA Team"]
 license = "MIT"
-keywords = ["ai", "agent", "sandbox", "security", "governor"]
-
-[lib]
-name = "wrap_governor"
-path = "src/lib.rs"
 
 [dependencies]
 tokio = { version = "1.35", features = ["full"] }
+tonic = "0.10"
+prost = "0.12"
+prost-types = "0.12"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-thiserror = "1.0"
-anyhow = "1.0"
 tracing = "0.1"
-tracing-subscriber = "0.3"
-sysinfo = "0.30"
-regex = "1.10"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
+thiserror = "1.0"
+ed25519-dalek = { version = "2.1", features = ["rand_core"] }
+rand = "0.8"
+sha2 = "0.10"
+hex = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
-uuid = { version = "1.6", features = ["v4", "serde"] }
 
-[dev-dependencies]
-tokio-test = "0.4"
+[build-dependencies]
+tonic-build = "0.10"
 
-[profile.release]
-opt-level = 3
-lto = true
+[[bin]]
+name = "governor"
+path = "src/bin/governor.rs"
+
+[lib]
+name = "governor"
+path = "src/lib.rs"

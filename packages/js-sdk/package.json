@@ -1,128 +1,42 @@
 {
-  "name": "@wrap-nebula/js-sdk",
-  "version": "1.0.0",
-  "description": "Complete JavaScript/TypeScript SDK for WRAP Nebula - AI Agent Sandbox Framework",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "name": "@wrap-nebula/ghost-sdk",
+  "version": "2.0.0",
+  "description": "WRAP NEBULA JavaScript SDK - Thin HTTP client for the Core Engine",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./client": {
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.js",
-      "types": "./dist/client.d.ts"
-    },
-    "./sandbox": {
-      "import": "./dist/sandbox/index.mjs",
-      "require": "./dist/sandbox/index.js",
-      "types": "./dist/sandbox/index.d.ts"
-    },
-    "./agent": {
-      "import": "./dist/agent/index.mjs",
-      "require": "./dist/agent/index.js",
-      "types": "./dist/agent/index.d.ts"
-    },
-    "./tools": {
-      "import": "./dist/tools/index.mjs",
-      "require": "./dist/tools/index.js",
-      "types": "./dist/tools/index.d.ts"
-    },
-    "./safety": {
-      "import": "./dist/safety/index.mjs",
-      "require": "./dist/safety/index.js",
-      "types": "./dist/safety/index.d.ts"
-    },
-    "./mcp": {
-      "import": "./dist/mcp/index.mjs",
-      "require": "./dist/mcp/index.js",
-      "types": "./dist/mcp/index.d.ts"
-    },
-    "./telemetry": {
-      "import": "./dist/telemetry/index.mjs",
-      "require": "./dist/telemetry/index.js",
-      "types": "./dist/telemetry/index.d.ts"
     }
   },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist"],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build"
-  },
-  "keywords": [
-    "wrap",
-    "nebula",
-    "ai",
-    "agent",
-    "sandbox",
-    "llm",
-    "openai",
-    "anthropic",
-    "mcp",
-    "model-context-protocol",
-    "telemetry",
-    "safety",
-    "permissions"
-  ],
-  "author": "WRAP Nebula Team",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wrap-nebula/js-sdk.git"
-  },
-  "bugs": {
-    "url": "https://github.com/wrap-nebula/js-sdk/issues"
-  },
-  "homepage": "https://github.com/wrap-nebula/js-sdk#readme",
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "eventemitter3": "^5.0.1",
-    "ws": "^8.16.0",
-    "zod": "^3.22.4",
-    "@opentelemetry/api": "^1.7.0",
-    "@opentelemetry/sdk-trace-base": "^1.19.0",
-    "@opentelemetry/sdk-metrics": "^1.19.0",
-    "@opentelemetry/resources": "^1.19.0",
-    "@opentelemetry/semantic-conventions": "^1.19.0"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "@types/ws": "^8.5.10",
-    "typescript": "^5.3.3",
     "tsup": "^8.0.1",
-    "vitest": "^1.0.4",
-    "@typescript-eslint/eslint-plugin": "^6.13.0",
-    "@typescript-eslint/parser": "^6.13.0",
-    "eslint": "^8.55.0"
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
   },
-  "peerDependencies": {
-    "openai": "^4.20.0",
-    "@anthropic-ai/sdk": "^0.17.0"
+  "engines": {
+    "node": ">=18.0.0"
   },
-  "peerDependenciesMeta": {
-    "openai": {
-      "optional": true
-    },
-    "@anthropic-ai/sdk": {
-      "optional": true
-    }
-  },
-  "sideEffects": false
+  "keywords": [
+    "ai",
+    "agent",
+    "llm",
+    "framework",
+    "zero-trust",
+    "wrap"
+  ],
+  "author": "WRAP NEBULA Team",
+  "license": "MIT"
 }

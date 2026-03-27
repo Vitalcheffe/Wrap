@@ -1,0 +1,34 @@
+# Default policy for WRAP NEBULA v2.0
+# This file is hot-reloadable
+
+version: "1.0"
+default_action: allow
+
+rules:
+  - block_dangerous_commands:
+    name: Block Dangerous Commands
+    description: Block shell commands that could harm the system
+    action: deny
+    priority: 1
+    enabled: true
+
+  - block_external_networks:
+    name: Block External Networks
+    description: Block requests to external networks not in whitelist
+    action: deny
+    priority: 10
+    enabled: true
+
+  - rate_limit_api:
+    name: Rate Limit API Calls
+    description: Limit API calls to prevent abuse
+    action: allow
+    priority: 100
+    enabled: true
+
+  - mask_pii:
+    name: Mask PII
+    description: Mask personally identifiable information
+    action: transform
+    priority: 50
+    enabled: true
