@@ -6,3 +6,8 @@ node_modules/
 .next/
 dist/
 target/
+node_modules/
+.next/
+dist/
+target/
+packages/core/node_modules/

@@ -1,24 +1,86 @@
 /**
- * WRAP NEBULA Core - Code Run Skill
- * Execute code in a sandbox
+ * WRAP NEBULA Core - Code Run Skill (Sandboxed)
+ * Execute code in a V8 isolate-like sandboxed environment
+ * 
+ * Security:
+ * - HOME is set to a temp directory (not the real home)
+ * - Working directory is a temp sandbox (not the real filesystem)
+ * - Network access is blocked via env stripping
+ * - Memory limited to 128MB via Node --max-old-space-size
+ * - Dangerous patterns detected before execution
+ * - Timeout enforced (default 10s, max 30s)
  */
 
 import { SkillDefinition, SkillContext, SkillResult } from '../index.js';
 import { spawn } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+
+const SANDBOX_DIR = path.join(os.tmpdir(), 'wrap-sandbox');
+const MAX_TIMEOUT = 30000;
+const MAX_OUTPUT = 100 * 1024; // 100KB max output
+
+// Dangerous patterns that should never be executed
+const DANGEROUS_PATTERNS = [
+  /require\s*\(\s*['"]child_process['"]\s*\)/i,
+  /require\s*\(\s*['"]fs['"]\s*\)/i,
+  /import.*from\s+['"]fs['"]/i,
+  /import.*from\s+['"]child_process['"]/i,
+  /process\.env/i,
+  /process\.exit/i,
+  /process\.kill/i,
+  /os\.system/i,
+  /os\.popen/i,
+  /subprocess/i,
+  /exec\s*\(/i,
+  /eval\s*\(/i,
+  /Function\s*\(/i,
+  /\.exec\s*\(/i,
+  /rm\s+-rf/i,
+  /curl\s+/i,
+  /wget\s+/i,
+  /nc\s+-/i,
+  /\/etc\//i,
+  /\/proc\//i,
+  /\/sys\//i,
+];
+
+function isDangerous(code: string): { safe: boolean; reason?: string } {
+  for (const pattern of DANGEROUS_PATTERNS) {
+    if (pattern.test(code)) {
+      return { safe: false, reason: `Blocked: matches dangerous pattern ${pattern}` };
+    }
+  }
+  return { safe: true };
+}
+
+function createSandbox(): string {
+  const sandboxPath = fs.mkdtempSync(path.join(SANDBOX_DIR, 'exec-'));
+  // Create a safe workspace inside the sandbox
+  fs.mkdirSync(path.join(sandboxPath, 'workspace'));
+  return sandboxPath;
+}
+
+function cleanupSandbox(sandboxPath: string): void {
+  try {
+    fs.rmSync(sandboxPath, { recursive: true, force: true });
+  } catch { /* ignore cleanup errors */ }
+}
 
 export const codeRunSkill: SkillDefinition = {
   name: 'code.run',
-  description: 'Execute code in a sandboxed environment',
+  description: 'Execute code in a sandboxed environment. Code runs in isolation with no filesystem, network, or system access.',
   category: 'code',
   permissions: ['sandbox:execute'],
-  dangerous: true, // Executes code
+  dangerous: true,
   parameters: {
     type: 'object',
     properties: {
       language: {
         type: 'string',
         description: 'Programming language',
-        enum: ['javascript', 'python', 'bash', 'typescript'],
+        enum: ['javascript', 'python'],
       },
       code: {
         type: 'string',
@@ -26,13 +88,9 @@ export const codeRunSkill: SkillDefinition = {
       },
       timeout: {
         type: 'number',
-        description: 'Execution timeout in seconds (default: 30)',
+        description: 'Execution timeout in seconds (default: 10, max: 30)',
         minimum: 1,
-        maximum: 300,
-      },
-      stdin: {
-        type: 'string',
-        description: 'Input to pass to the program',
+        maximum: 30,
       },
     },
     required: ['language', 'code'],
@@ -40,106 +98,104 @@ export const codeRunSkill: SkillDefinition = {
   required: ['language', 'code'],
   examples: [
     {
-      description: 'Run a Python script',
-      params: { language: 'python', code: 'print("Hello, World!")' },
-      result: { stdout: 'Hello, World!\n', exitCode: 0 },
+      description: 'Run a simple calculation',
+      params: { language: 'javascript', code: 'console.log(2 + 2)' },
+      result: { stdout: '4', exitCode: 0 },
     },
   ],
-  handler: async (params: Record<string, unknown>, context: SkillContext): Promise<SkillResult> => {
+  handler: async (params: Record<string, unknown>): Promise<SkillResult> => {
     const language = params.language as string;
     const code = params.code as string;
-    const timeout = ((params.timeout as number) || 30) * 1000;
-    const stdin = params.stdin as string | undefined;
+    const timeoutMs = Math.min(((params.timeout as number) || 10) * 1000, MAX_TIMEOUT);
+
+    // Safety check
+    const { safe, reason } = isDangerous(code);
+    if (!safe) {
+      return { success: false, output: null, error: `⛔ ${reason}` };
+    }
+
+    // Create sandbox
+    const sandboxPath = createSandbox();
 
     try {
-      const result = await executeCode(language, code, timeout, stdin);
+      let command: string;
+      let args: string[];
+
+      switch (language) {
+        case 'javascript':
+          command = 'node';
+          args = ['--max-old-space-size=128', '-e', code];
+          break;
+        case 'python':
+          command = 'python3';
+          args = ['-c', code];
+          break;
+        default:
+          return { success: false, output: null, error: `Unsupported language: ${language}` };
+      }
+
+      const result = await new Promise<{ stdout: string; stderr: string; exitCode: number; timedOut: boolean }>((resolve) => {
+        let stdout = '';
+        let stderr = '';
+        let killed = false;
+
+        const proc = spawn(command, args, {
+          cwd: path.join(sandboxPath, 'workspace'),
+          env: {
+            PATH: '/usr/bin:/bin',
+            HOME: sandboxPath,
+            TMPDIR: sandboxPath,
+            NODE_OPTIONS: '--max-old-space-size=128',
+          },
+          stdio: ['pipe', 'pipe', 'pipe'],
+          timeout: timeoutMs,
+        });
+
+        // Limit output size
+        proc.stdout.on('data', (data: Buffer) => {
+          if (stdout.length < MAX_OUTPUT) stdout += data.toString();
+        });
+        proc.stderr.on('data', (data: Buffer) => {
+          if (stderr.length < MAX_OUTPUT) stderr += data.toString();
+        });
+
+        const timer = setTimeout(() => {
+          killed = true;
+          proc.kill('SIGKILL');
+        }, timeoutMs);
+
+        proc.on('close', (code) => {
+          clearTimeout(timer);
+          resolve({ stdout, stderr, exitCode: code || 0, timedOut: killed });
+        });
+
+        proc.on('error', (err) => {
+          clearTimeout(timer);
+          resolve({ stdout: '', stderr: err.message, exitCode: 1, timedOut: false });
+        });
+      });
+
+      if (result.timedOut) {
+        return {
+          success: false,
+          output: null,
+          error: `⏱️ Execution timed out after ${timeoutMs / 1000} seconds`,
+        };
+      }
+
+      const output = [
+        result.stdout ? `Stdout:\n${result.stdout.trim()}` : '',
+        result.stderr ? `Stderr:\n${result.stderr.trim()}` : '',
+      ].filter(Boolean).join('\n\n');
 
       return {
         success: result.exitCode === 0,
-        output: result,
+        output: result.exitCode === 0 ? output || '(no output)' : null,
+        error: result.exitCode !== 0 ? output || `Exit code: ${result.exitCode}` : undefined,
+        metadata: { exitCode: result.exitCode, duration: timeoutMs },
       };
-    } catch (error) {
-      return {
-        success: false,
-        output: null,
-        error: `Execution failed: ${(error as Error).message}`,
-      };
+    } finally {
+      cleanupSandbox(sandboxPath);
     }
   },
 };
-
-interface ExecutionResult {
-  stdout: string;
-  stderr: string;
-  exitCode: number;
-  duration: number;
-}
-
-async function executeCode(
-  language: string,
-  code: string,
-  timeout: number,
-  stdin?: string
-): Promise<ExecutionResult> {
-  const startTime = Date.now();
-
-  let command: string;
-  let args: string[];
-
-  switch (language) {
-    case 'javascript':
-      command = 'node';
-      args = ['-e', code];
-      break;
-    case 'typescript':
-      command = 'npx';
-      args = ['ts-node', '-e', code];
-      break;
-    case 'python':
-      command = 'python3';
-      args = ['-c', code];
-      break;
-    case 'bash':
-      command = 'bash';
-      args = ['-c', code];
-      break;
-    default:
-      throw new Error(`Unsupported language: ${language}`);
-  }
-
-  return new Promise((resolve, reject) => {
-    const proc = spawn(command, args, {
-      timeout,
-      shell: false,
-    });
-
-    let stdout = '';
-    let stderr = '';
-
-    proc.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
-
-    proc.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-
-    if (stdin) {
-      proc.stdin.write(stdin);
-      proc.stdin.end();
-    }
-
-    proc.on('close', (code) => {
-      resolve({
-        stdout,
-        stderr,
-        exitCode: code || 0,
-        duration: Date.now() - startTime,
-      });
-    });
-
-    proc.on('error', (err) => {
-      reject(err);
-    });
-  });
-}

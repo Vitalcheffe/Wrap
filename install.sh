@@ -26,7 +26,7 @@ OS="$(uname -s)"
 ARCH="$(uname -m)"
 
 # Version
-VERSION="7.0.0"
+VERSION="8.0.0"
 NEBULA_DIR="$HOME/.nebula"
 BIN_DIR="$HOME/.local/bin"
 

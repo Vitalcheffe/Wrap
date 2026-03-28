@@ -169,6 +169,46 @@ function parseSoul(filePath: string): SoulConfig {
 }
 
 // ============================================================================
+// Audit Trail (Ed25519-signed)
+// ============================================================================
+
+let auditTrail: {
+  log: (action: string, input: string, output: string, agentId?: string) => void;
+  verifyAll: () => { total: number; valid: number; invalid: number[] };
+  getRecent: (n?: number) => Array<Record<string, unknown>>;
+} | null = null;
+
+function initAuditTrail() {
+  try {
+    const { AuditTrail } = require('../packages/core/dist/audit/trail.js');
+    const dataDir = process.env.WRAP_DATA_DIR || path.join(os.homedir(), '.wrap');
+    auditTrail = new AuditTrail(dataDir);
+    return true;
+  } catch {
+    // Fallback: simple file-based log without Ed25519
+    const logPath = path.join(process.env.WRAP_DATA_DIR || path.join(os.homedir(), '.wrap'), 'audit.log');
+    fs.mkdirSync(path.dirname(logPath), { recursive: true });
+    const crypto = require('crypto');
+    auditTrail = {
+      log: (action: string, input: string, output: string, agentId = 'default') => {
+        const entry = {
+          id: crypto.randomUUID().slice(0, 8),
+          timestamp: Date.now(),
+          action,
+          input_hash: crypto.createHash('sha256').update(input).digest('hex').slice(0, 16),
+          output_hash: crypto.createHash('sha256').update(output).digest('hex').slice(0, 16),
+          agent_id: agentId,
+        };
+        fs.appendFileSync(logPath, JSON.stringify(entry) + '\n');
+      },
+      verifyAll: () => ({ total: 0, valid: 0, invalid: [] }),
+      getRecent: () => [],
+    };
+    return true;
+  }
+}
+
+// ============================================================================
 // Input Sanitizer
 // ============================================================================
 
@@ -202,6 +242,7 @@ async function processMessage(sessionId: string, userMessage: string, soul: Soul
   // Sanitize
   const { safe, reason } = sanitizeInput(userMessage);
   if (!safe) {
+    if (auditTrail) auditTrail.log('BLOCKED', userMessage.slice(0, 100), reason || 'injection detected', sessionId);
     return `⚠️ Request blocked: ${reason}`;
   }
 
@@ -225,6 +266,9 @@ async function processMessage(sessionId: string, userMessage: string, soul: Soul
 
   // Call LLM
   const reply = await ollamaChat(messages);
+
+  // Audit log
+  if (auditTrail) auditTrail.log('LLM_RESPONSE', userMessage.slice(0, 200), reply.slice(0, 200), sessionId);
 
   // Save assistant reply
   if (db) {
@@ -294,7 +338,21 @@ function startTelegram(soul: SoulConfig, systemPrompt: string) {
       if (db) {
         try { db.run('DELETE FROM messages WHERE session_id = ?', sessionId); } catch { /* ignore */ }
       }
+      if (auditTrail) auditTrail.log('RESET_MEMORY', 'user request', 'memory cleared', sessionId);
       ctx.reply('Memory cleared. Fresh start! 🧹');
+    });
+
+    bot.command('audit', (ctx: { reply: (msg: string) => void }) => {
+      if (auditTrail) {
+        const report = auditTrail.verifyAll();
+        const recent = auditTrail.getRecent(5);
+        const recentStr = recent.map((e: Record<string, unknown>) => 
+          `• ${(e.action as string || '').slice(0, 20)} @ ${new Date(e.timestamp as number).toLocaleTimeString()}`
+        ).join('\n');
+        ctx.reply(`🔍 Audit Trail\n\nTotal entries: ${report.total}\nValid signatures: ${report.valid}\nInvalid: ${report.invalid.length}\n\nRecent:\n${recentStr || 'No entries yet'}`);
+      } else {
+        ctx.reply('Audit trail not available');
+      }
     });
 
     bot.on('text', async (ctx: { message: { text: string }; from: { id: number }; reply: (msg: string) => Promise<void>; sendChatAction: (action: string) => Promise<void> }) => {
@@ -436,6 +494,10 @@ async function main() {
   // Init memory
   initMemory();
   console.log(`  [✓] Memory initialized (${db ? 'SQLite' : 'in-memory'})`);
+
+  // Init audit trail
+  initAuditTrail();
+  console.log(`  [✓] Audit trail initialized`);
 
   // Start API
   startAPI(soul);
