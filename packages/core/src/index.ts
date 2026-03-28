@@ -96,6 +96,10 @@ export {
   calendarReadSkill,
   emailSummarySkill,
   gitStatusSkill,
+  codeEditSkill,
+  codeSearchSkill,
+  terminalRunSkill,
+  projectContextSkill,
 } from './skills/definitions/index';
 
 // ============================================================================

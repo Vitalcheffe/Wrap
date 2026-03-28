@@ -1,117 +1,138 @@
 # Contributing to WRAP NEBULA
 
-Thanks for your interest. NEBULA is MIT — contributions are welcome from developers, students, and security researchers at any level.
+Thanks for your interest in contributing! WRAP NEBULA is an open-source project and we welcome contributions of all kinds.
 
----
+## Getting Started
 
-## Ways to contribute
+### Prerequisites
 
-- **Report bugs** → open an issue with the bug report template
-- **Suggest features** → open an issue with the feature request template
-- **Write a skill** → the fastest way to add real value
-- **Improve docs** → fix typos, add examples, translate
-- **Review pull requests** → test on your machine and comment
-- **Security audit** → especially the Rust Governor — see [Security Policy](SECURITY.md)
+- Node.js 18+
+- npm 9+
+- Rust 1.70+ (optional, for the Safety Governor)
+- Git
 
----
-
-## Writing a skill
-
-Skills live in `packages/core/src/skills/definitions/`. Each skill is a single TypeScript file.
-
-```typescript
-// packages/core/src/skills/definitions/my.skill.ts
-import { SkillDefinition } from '../index.js';
-
-export const mySkill: SkillDefinition = {
-  name: 'my.skill',
-  description: 'One sentence description of what this skill does',
-
-  // Declare permissions upfront — the Rust Governor enforces these.
-  // If your skill tries to do something not listed here, it is BLOCKED.
-  permissions: ['network.http'],   // or: filesystem.read, filesystem.write, process.exec
-
-  safe: true,   // false = requires explicit user confirmation before each run
-
-  parameters: {
-    query: { type: 'string', required: true, description: 'Search query' }
-  },
-
-  handler: async (params, context) => {
-    // Your logic here
-    return { result: 'output text' };
-  }
-};
-```
-
-Then register it in `packages/core/src/skills/definitions/index.ts`:
-
-```typescript
-export { mySkill } from './my.skill.js';
-```
-
-Run `cd packages/core && npx tsc --noEmit` — zero errors required before opening a PR.
-
----
-
-## Development setup
+### Setup
 
 ```bash
 git clone https://github.com/Vitalcheffe/Wrap.git
 cd Wrap
 npm install
 
-# Start everything (Governor + Core + Dashboard)
-./scripts/nebula dev
+# Optional: build the Rust Governor
+cd crates/governor && cargo build --release && cd ../..
 
-# TypeScript — must stay at 0 errors
-cd packages/core && npx tsc --noEmit
-
-# Tests — must stay at 29/29
-python -m pytest tests/ -o "addopts=" -v
-
-# Rust Governor (requires Rust toolchain)
-cd crates/governor && cargo build --release && cargo test
+# Run tests
+npm test
 ```
 
+## How to Contribute
+
+### Reporting Bugs
+
+1. Check if the issue already exists
+2. Create a new issue with:
+   - Clear title starting with `[Bug]`
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Environment (OS, Node version, WRAP version)
+
+### Suggesting Features
+
+1. Create an issue with `[Feature]` prefix
+2. Describe the use case
+3. Propose an implementation approach
+
+### Adding a New Skill
+
+Skills live in `packages/core/src/skills/definitions/`. Each skill exports a `SkillDefinition`:
+
+```typescript
+import { SkillDefinition } from '../index';
+
+export const mySkill: SkillDefinition = {
+  name: 'my.skill',
+  description: 'What this skill does',
+  parameters: {
+    param1: { type: 'string', description: 'Parameter description', required: true },
+  },
+  async execute(params: Record<string, unknown>) {
+    // Implementation
+    return { success: true, output: 'Result' };
+  },
+};
+```
+
+Then add it to `packages/core/src/skills/definitions/index.ts`.
+
+### Pull Request Process
+
+1. Fork the repo
+2. Create a feature branch: `git checkout -b feat/my-feature`
+3. Make your changes
+4. Write tests for new functionality
+5. Ensure all tests pass: `npm test`
+6. Ensure zero TypeScript errors: `npx tsc --noEmit`
+7. Commit with conventional format: `feat: description` or `fix: description`
+8. Push and open a PR against `main`
+
+### Code Style
+
+- **TypeScript strict** — no `any`, use `unknown` and narrow properly
+- **No TODOs** — implement or delete
+- **Every function needs JSDoc** — `@param`, `@returns`, one-line description
+- **Error handling** — every `catch` must log with context
+- **Tests required** — every new feature needs tests
+
+### Commit Convention
+
+- `feat:` — new feature
+- `fix:` — bug fix
+- `docs:` — documentation only
+- `test:` — adding tests
+- `chore:` — maintenance (deps, CI, config)
+- `refactor:` — code change that neither fixes a bug nor adds a feature
+
+## Architecture
+
+```
+Wrap/
+├── packages/core/        ← Main agent engine
+├── packages/cli/         ← nebula init/start commands
+├── packages/channels/    ← Telegram, Discord (coming)
+├── apps/war-room/        ← Web dashboard
+├── crates/governor/      ← Rust security layer
+├── skills/default/       ← SOUL.md agent definition
+└── policy/               ← YAML security policies
+```
+
+### Message Flow
+
+```
+User Message
+  → InputSanitizer (injection detection)
+  → SOULParser (load agent personality)
+  → AgentRuntime (process with LLM)
+  → ToolsManager (execute skills if needed)
+  → Memory (save to SQLite)
+  → Response to user
+```
+
+## Security
+
+WRAP NEBULA takes security seriously:
+
+- All skills are sandboxed (V8 isolates)
+- Every action is logged with Ed25519 signatures
+- PII is auto-redacted
+- Path traversal is blocked
+- Dangerous commands are filtered
+
+If you find a security vulnerability, please email instead of opening a public issue.
+
+## Questions?
+
+Open a Discussion or reach out on Telegram.
+
 ---
 
-## Pull request rules
-
-1. **TSC must pass** — `npx tsc --noEmit` with zero errors
-2. **Tests must pass** — 29/29 minimum, add tests for new features
-3. **One PR, one thing** — don't mix a new skill with a refactor
-4. **Write in English** — issues and PRs, any language is fine in comments
-5. **No breaking changes to the Core API** without a discussion first
-6. **Skills must declare permissions** — no `permissions: []` for skills that touch the network or filesystem
-
----
-
-## Security contributions
-
-The Rust Governor is the most critical component. If you find a bypass:
-
-1. Do **not** open a public issue
-2. Open a [private security advisory](https://github.com/Vitalcheffe/Wrap/security/advisories/new)
-3. We will respond within 72 hours
-
-See [SECURITY.md](SECURITY.md) for the full policy.
-
----
-
-## Code style
-
-- TypeScript: no `any`, explicit return types on public functions
-- Python: type hints on all function signatures
-- Rust: `clippy` warnings must be clean (`cargo clippy -- -D warnings`)
-- Commit messages: `feat:`, `fix:`, `docs:`, `refactor:`, `test:` prefixes
-
----
-
-## First contribution? Start here
-
-Issues labeled [`good first issue`](https://github.com/Vitalcheffe/Wrap/labels/good%20first%20issue) are small, well-defined, and documented. Pick one, comment that you're working on it, and open a draft PR early so we can help.
-
----
-
-*WRAP NEBULA — Your AI. Your machine. Your rules.* 🌌
+Built with ❤️ by [VitalCheffe](https://github.com/Vitalcheffe) — 16, Casablanca 🇲🇦

@@ -2,12 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     branches: [main]
 
 jobs:
-  test:
+  typescript:
+    name: TypeScript Build & Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -16,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -25,14 +26,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build all packages
         run: npm run build
 
-      - name: Test
+      - name: Run tests
         run: npm test
 
+      - name: Type check
+        run: npx tsc --noEmit
+        working-directory: packages/core
+
   rust:
+    name: Rust Build & Tests
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -40,38 +47,35 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            crates/governor/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('crates/governor/Cargo.lock') }}
+          workspaces: crates/governor
 
-      - name: Check
-        run: cargo check
-        working-directory: crates/governor
+      - name: Build Governor
+        run: cargo build --release --manifest-path crates/governor/Cargo.toml
 
-      - name: Test
-        run: cargo test
-        working-directory: crates/governor
+      - name: Test Governor
+        run: cargo test --manifest-path crates/governor/Cargo.toml
+
+      - name: Clippy
+        run: cargo clippy --manifest-path crates/governor/Cargo.toml -- -D warnings
 
   lint:
+    name: Lint
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check
-        run: |
-          npm run typecheck --workspace=@wrap-nebula/core || true
-          npm run typecheck --workspace=@wrap-nebula/cli || true
-          npm run typecheck --workspace=@wrap-nebula/channel-telegram || true
+      - name: ESLint
+        run: npx eslint packages/core/src --ext .ts --max-warnings 0
+        continue-on-error: true

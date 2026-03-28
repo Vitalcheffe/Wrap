@@ -16,6 +16,10 @@ import { reminderListSkill } from './reminder.list.js';
 import { calendarReadSkill } from './calendar.read.js';
 import { emailSummarySkill } from './email.summary.js';
 import { gitStatusSkill } from './git.status.js';
+import { codeEditSkill } from './code.edit.js';
+import { codeSearchSkill } from './code.search.js';
+import { terminalRunSkill } from './terminal.run.js';
+import { projectContextSkill } from './project.context.js';
 
 // Re-export all skills
 export {
@@ -29,6 +33,10 @@ export {
   calendarReadSkill,
   emailSummarySkill,
   gitStatusSkill,
+  codeEditSkill,
+  codeSearchSkill,
+  terminalRunSkill,
+  projectContextSkill,
 };
 
 // List of all built-in skills
@@ -43,6 +51,10 @@ export const builtinSkills = [
   calendarReadSkill,
   emailSummarySkill,
   gitStatusSkill,
+  codeEditSkill,
+  codeSearchSkill,
+  terminalRunSkill,
+  projectContextSkill,
 ];
 
 // Allowed skills list for validation
