@@ -496,7 +496,7 @@ export class AgentRuntime extends EventEmitter {
 
   private createSandboxInterface() {
     return {
-      execute: async (command: string, options?: any) => ({
+      execute: async (command: string, options?: unknown) => ({
         success: true,
         exitCode: 0,
         stdout: '',

@@ -196,7 +196,8 @@ export class Ghost extends EventEmitter {
    */
   async health(): Promise<Record<string, unknown>> {
     const response = await this.makeRequest('/health');
-    return response.json();
+    const data: unknown = await response.json();
+    return data as Record<string, unknown>;
   }
 
   /**
@@ -204,8 +205,9 @@ export class Ghost extends EventEmitter {
    */
   async listAgents(): Promise<Array<{ id: string; status: string }>> {
     const response = await this.makeRequest('/v1/agents');
-    const data = await response.json();
-    return data.agents || [];
+    const data: unknown = await response.json();
+    const obj = data as Record<string, unknown>;
+    return (obj.agents as Array<{ id: string; status: string }>) || [];
   }
 
   /**
@@ -213,7 +215,8 @@ export class Ghost extends EventEmitter {
    */
   async getAgent(agentId: string): Promise<Record<string, unknown>> {
     const response = await this.makeRequest(`/v1/agents/${agentId}`);
-    return response.json();
+    const data: unknown = await response.json();
+    return data as Record<string, unknown>;
   }
 
   /**
@@ -221,8 +224,9 @@ export class Ghost extends EventEmitter {
    */
   async deleteAgent(agentId: string): Promise<boolean> {
     const response = await this.makeRequest(`/v1/agents/${agentId}`, { method: 'DELETE' });
-    const data = await response.json();
-    return data.deleted === true;
+    const data: unknown = await response.json();
+    const obj = data as Record<string, unknown>;
+    return obj.deleted === true;
   }
 
   /**
@@ -230,8 +234,9 @@ export class Ghost extends EventEmitter {
    */
   async listTools(): Promise<Array<{ name: string; description: string }>> {
     const response = await this.makeRequest('/v1/tools');
-    const data = await response.json();
-    return data.tools || [];
+    const data: unknown = await response.json();
+    const obj = data as Record<string, unknown>;
+    return (obj.tools as Array<{ name: string; description: string }>) || [];
   }
 
   /**
@@ -286,12 +291,19 @@ export class Ghost extends EventEmitter {
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
     try {
-      const response = await fetch(url, {
+      const fetchOptions: RequestInit = {
         method: options.method || 'GET',
         headers: { ...this.getHeaders(), ...options.headers },
-        body: options.body as BodyInit,
         signal: controller.signal,
-      });
+      };
+
+      if (options.body !== undefined) {
+        fetchOptions.body = typeof options.body === 'string'
+          ? options.body
+          : JSON.stringify(options.body);
+      }
+
+      const response = await fetch(url, fetchOptions);
 
       this.checkResponse(response);
       return response;
@@ -312,7 +324,8 @@ export class Ghost extends EventEmitter {
           method: 'POST',
           body: JSON.stringify(payload),
         });
-        return response.json();
+        const data: unknown = await response.json();
+        return data as Record<string, unknown>;
       } catch (error) {
         lastError = error as Error;
 
