@@ -4,6 +4,49 @@ All notable changes to WRAP NEBULA are documented here.
 
 ---
 
+## [v8.0.0] — 2026-03-28 — Production Quality
+
+### Added
+- Full audit report (AUDIT.md) with build, test, and code quality analysis
+- GitHub Actions CI workflow (`.github/workflows/ci.yml`)
+  - Node.js 18/20 matrix testing
+  - Rust build and test
+  - TypeScript type checking
+- JS SDK test suite (11 tests) — sanitizer, export validation
+- War Room test placeholder script
+
+### Fixed
+- **TypeScript compilation errors** — zero errors across all packages
+  - `js-sdk/client.ts`: Fixed `unknown` type issues with proper casting
+  - `js-sdk/client.ts`: Replaced `BodyInit` cast with `RequestInit` typing
+  - `core/agent/index.ts`: Removed `any` type usage
+- **Memory test suite** — complete API alignment
+  - Fixed `getConversation(userId, channelId)` signature
+  - Fixed `addMessage(userId, channelId, channelType, role, content)` signature
+  - Fixed `deleteConversation(userId, channelId)` signature
+  - Added `getRecentMessages`, `setContext`, `getContext` tests
+- **Sanitizer test** — removed `any` type (used `unknown as string`)
+- **SOUL parser test** — `validateSOUL()` now receives string instead of SOUL object
+- **Circuit breaker test** — added `volumeThreshold: 1` to match test expectations
+- **Rust Governor** — complete rewrite for compilation
+  - Replaced local `regex` stub with actual `regex` crate (v1.10)
+  - Replaced local `uuid` stub with actual `uuid` crate (v1.7)
+  - Removed `tonic`/`prost` gRPC dependencies (not needed for MVP)
+  - Fixed `Signature::from_hex` → `hex::decode` + `Signature::from_slice`
+  - Added SQL injection and XSS detection patterns
+  - Removed `build.rs` and `proto/` directory
+
+### Changed
+- Test count: 29/29 → 43/43
+- README updated: badges, skills table, architecture, CLI commands
+- `.env.example` cleaned up
+
+### Removed
+- `crates/governor/build.rs` — tonic-build no longer needed
+- `crates/governor/proto/governor.proto` — gRPC proto no longer needed
+
+---
+
 ## [v7.0.0] — 2026-03-27 — Launch
 
 ### Added
