@@ -94,7 +94,7 @@ export class Ghost extends EventEmitter {
     super();
     this.config = {
       endpoint: config.endpoint || 'http://localhost:3777',
-      model: config.model || 'claude-3-opus',
+      model: config.model || 'claude-sonnet-4-20250514',
       apiKey: config.apiKey || '',
       timeout: config.timeout || 300000,
       maxRetries: config.maxRetries || 3,

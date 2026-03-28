@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package governor;
+
+service SafetyGovernor {
+    rpc CheckPermission (PermissionRequest) returns (PermissionResponse);
+    rpc ValidateAction (ActionRequest) returns (ActionResponse);
+    rpc GetAuditTrail (AuditRequest) returns (AuditResponse);
+}
+
+message PermissionRequest {
+    string agent_id = 1;
+    string capability = 2;
+    string resource = 3;
+}
+
+message PermissionResponse {
+    bool allowed = 1;
+    string reason = 2;
+}
+
+message ActionRequest {
+    string agent_id = 1;
+    string action_type = 2;
+    string payload = 3;
+}
+
+message ActionResponse {
+    bool approved = 1;
+    string reason = 2;
+    string signature = 3;
+}
+
+message AuditRequest {
+    string agent_id = 1;
+    int32 limit = 2;
+}
+
+message AuditResponse {
+    repeated AuditEntry entries = 1;
+}
+
+message AuditEntry {
+    string id = 1;
+    uint64 timestamp = 2;
+    string agent_id = 3;
+    string action = 4;
+    string outcome = 5;
+    string hash = 6;
+    string signature = 7;
+}

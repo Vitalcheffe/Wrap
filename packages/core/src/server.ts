@@ -828,7 +828,7 @@ export class CoreServer extends EventEmitter {
   private async handleStreamingExecution(session: WebSocketSession, message: Record<string, unknown>): Promise<void> {
     try {
       const task = message.task as string;
-      const model = message.model as string || 'claude-3-opus';
+      const model = message.model as string || 'claude-sonnet-4-20250514';
 
       // Create agent for streaming
       const agentId = `stream-${crypto.randomUUID()}`;
@@ -912,7 +912,7 @@ export class CoreServer extends EventEmitter {
       name: (body.name as string) || `Agent ${agentId}`,
       model: {
         provider: (body.provider as string) || this.getProviderFromModel(body.model as string),
-        model: (body.model as string) || 'claude-3-opus',
+        model: (body.model as string) || 'claude-sonnet-4-20250514',
         temperature: body.temperature as number | undefined,
         maxTokens: body.maxTokens as number | undefined,
         apiKey: process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY,
