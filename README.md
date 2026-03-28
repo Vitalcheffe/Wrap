@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/banner.png" alt="WRAP NEBULA" width="100%" />
-</p>
-
 <h1 align="center">WRAP NEBULA</h1>
 <p align="center">The AI kernel for secure, local-first agentic infrastructure.<br/>Zero-trust. 100% private. Every skill verified before it runs.</p>
 
