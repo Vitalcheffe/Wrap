@@ -37,7 +37,7 @@ Rules:
   it('should validate skill names against allowed list', () => {
     const content = `Name: Test\nSkills:\n- web.search\n- nonexistent.skill`;
     const soul = parseSOUL(content);
-    const validation = validateSOUL(soul);
+    const validation = validateSOUL(content);
     expect(validation).toBeDefined();
     expect(validation.valid).toBeDefined();
   });

@@ -12,6 +12,7 @@ describe('CircuitBreaker', () => {
     breaker = new CircuitBreaker({
       failureThreshold: 3,
       resetTimeout: 1000,
+      volumeThreshold: 1,
     });
   });
 
