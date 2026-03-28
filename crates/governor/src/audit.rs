@@ -1,14 +1,15 @@
 //! Audit trail for the Safety Governor
 
 use anyhow::Result;
-use ed25519_dalek::{SigningKey, Signature, Signer, Verifier, VerifyingKey};
+use ed25519_dalek::{Signature, Signer, Verifier, VerifyingKey};
 use rand::rngs::OsRng;
 use serde::{Deserialize, Serialize};
 use sha2::{Sha256, Digest};
-use std::fs::{self, File, OpenOptions};
+use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
+use uuid::Uuid;
 
 /// Audit entry
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -33,7 +34,7 @@ pub struct AuditEntry {
     pub previous_hash: String,
     /// Current hash
     pub hash: String,
-    /// Ed25519 signature
+    /// Ed25519 signature (hex-encoded)
     pub signature: String,
 }
 
@@ -41,7 +42,7 @@ pub struct AuditEntry {
 pub struct AuditTrail {
     entries: Vec<AuditEntry>,
     log_path: String,
-    signing_key: SigningKey,
+    signing_key: ed25519_dalek::SigningKey,
     verifying_key: VerifyingKey,
     last_hash: String,
 }
@@ -50,11 +51,11 @@ impl AuditTrail {
     /// Create a new audit trail
     pub fn new<P: AsRef<Path>>(log_path: P) -> Result<Self> {
         let mut csprng = OsRng;
-        let signing_key = SigningKey::generate(&mut csprng);
-        let verifying_key = signing_key.verifying_key();
-        
+        let signing_key = ed25519_dalek::SigningKey::generate(&mut csprng);
+        let verifying_key = signing_key.verifying_key().clone();
+
         let log_path_str = log_path.as_ref().to_string_lossy().to_string();
-        
+
         let mut trail = Self {
             entries: Vec::new(),
             log_path: log_path_str,
@@ -62,15 +63,15 @@ impl AuditTrail {
             verifying_key,
             last_hash: "0".repeat(64), // Genesis hash
         };
-        
+
         // Load existing entries if log file exists
         if log_path.as_ref().exists() {
             trail.load_existing()?;
         }
-        
+
         Ok(trail)
     }
-    
+
     /// Log an execution
     pub fn log_execution(
         &mut self,
@@ -89,10 +90,10 @@ impl AuditTrail {
             }),
             if result.success { "success" } else { "failure" },
         );
-        
+
         self.append(entry)
     }
-    
+
     /// Log a permission check
     pub fn log_permission_check(
         &mut self,
@@ -109,10 +110,10 @@ impl AuditTrail {
             serde_json::json!({}),
             if allowed { "allowed" } else { "denied" },
         );
-        
+
         self.append(entry)
     }
-    
+
     /// Log a security event
     pub fn log_security_event(
         &mut self,
@@ -128,15 +129,15 @@ impl AuditTrail {
             details,
             "blocked",
         );
-        
+
         self.append(entry)
     }
-    
+
     /// Get all entries
     pub fn entries(&self) -> &[AuditEntry] {
         &self.entries
     }
-    
+
     /// Get entries for an agent
     pub fn entries_for_agent(&self, agent_id: &str) -> Vec<&AuditEntry> {
         self.entries
@@ -144,34 +145,35 @@ impl AuditTrail {
             .filter(|e| e.agent_id == agent_id)
             .collect()
     }
-    
+
     /// Verify the audit trail integrity
     pub fn verify(&self) -> Result<bool> {
         let mut previous_hash = "0".repeat(64);
-        
+
         for entry in &self.entries {
             // Verify hash
             let computed_hash = self.compute_hash(entry, &previous_hash);
             if computed_hash != entry.hash {
                 return Ok(false);
             }
-            
+
             // Verify signature
-            let signature = Signature::from_hex(&entry.signature)?;
-            if !self.verifying_key.verify(entry.hash.as_bytes(), &signature).is_ok() {
+            let sig_bytes = hex::decode(&entry.signature)?;
+            let signature = Signature::from_slice(&sig_bytes)?;
+            if self.verifying_key.verify(entry.hash.as_bytes(), &signature).is_err() {
                 return Ok(false);
             }
-            
+
             previous_hash = entry.hash.clone();
         }
-        
+
         Ok(true)
     }
-    
+
     // Private methods
-    
+
     fn create_entry(
-        &mut self,
+        &self,
         entry_type: &str,
         agent_id: &str,
         action: &str,
@@ -179,12 +181,12 @@ impl AuditTrail {
         details: serde_json::Value,
         outcome: &str,
     ) -> AuditEntry {
-        let id = uuid::Uuid::new_v4().to_string();
+        let id = Uuid::new_v4().to_string();
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_millis() as u64;
-        
+
         let hash = self.compute_hash_from_parts(
             &id,
             timestamp,
@@ -196,9 +198,9 @@ impl AuditTrail {
             outcome,
             &self.last_hash,
         );
-        
+
         let signature = self.signing_key.sign(hash.as_bytes());
-        
+
         AuditEntry {
             id,
             timestamp,
@@ -210,25 +212,25 @@ impl AuditTrail {
             outcome: outcome.to_string(),
             previous_hash: self.last_hash.clone(),
             hash,
-            signature: signature.to_hex().to_string(),
+            signature: hex::encode(signature.to_bytes()),
         }
     }
-    
+
     fn append(&mut self, entry: AuditEntry) -> Result<()> {
         self.last_hash = entry.hash.clone();
         self.entries.push(entry.clone());
-        
+
         // Append to log file
         let mut file = OpenOptions::new()
             .create(true)
             .append(true)
             .open(&self.log_path)?;
-        
+
         writeln!(file, "{}", serde_json::to_string(&entry)?)?;
-        
+
         Ok(())
     }
-    
+
     fn compute_hash(&self, entry: &AuditEntry, previous_hash: &str) -> String {
         self.compute_hash_from_parts(
             &entry.id,
@@ -242,7 +244,7 @@ impl AuditTrail {
             previous_hash,
         )
     }
-    
+
     fn compute_hash_from_parts(
         &self,
         id: &str,
@@ -267,46 +269,25 @@ impl AuditTrail {
         hasher.update(details.to_string().as_bytes());
         hasher.update(outcome.as_bytes());
         hasher.update(previous_hash.as_bytes());
-        
+
         hex::encode(hasher.finalize())
     }
-    
+
     fn load_existing(&mut self) -> Result<()> {
         let file = File::open(&self.log_path)?;
         let reader = BufReader::new(file);
-        
+
         for line in reader.lines() {
             let line = line?;
             if line.trim().is_empty() {
                 continue;
             }
-            
+
             let entry: AuditEntry = serde_json::from_str(&line)?;
             self.last_hash = entry.hash.clone();
             self.entries.push(entry);
         }
-        
-        Ok(())
-    }
-}
 
-/// Simple UUID module (minimal implementation)
-mod uuid {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    
-    pub struct Uuid;
-    
-    impl Uuid {
-        pub fn new_v4() -> Self {
-            Uuid
-        }
-        
-        pub fn to_string(&self) -> String {
-            let timestamp = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos();
-            format!("{:016x}-{:016x}", timestamp, rand::random::<u64>())
-        }
+        Ok(())
     }
 }

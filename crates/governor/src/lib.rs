@@ -1,12 +1,12 @@
 //! WRAP NEBULA v2.0 - Rust Safety Governor
-//! 
+//!
 //! Zero Trust security enforcement layer for the WRAP NEBULA framework.
-//! 
+//!
 //! # Features
 //! - Permission-based access control
 //! - Sandbox execution
 //! - Audit trail with Ed25519 signatures
-//! - Injection filtering
+//! - Injection filtering (prompt injection, SQL, XSS)
 //! - Rate limiting
 
 pub mod audit;
@@ -22,19 +22,19 @@ use thiserror::Error;
 pub enum GovernorError {
     #[error("Permission denied: {0}")]
     PermissionDenied(String),
-    
+
     #[error("Sandbox error: {0}")]
     SandboxError(String),
-    
+
     #[error("Injection detected: {0}")]
     InjectionDetected(String),
-    
+
     #[error("Rate limit exceeded: {0}")]
     RateLimitExceeded(String),
-    
+
     #[error("Audit error: {0}")]
     AuditError(String),
-    
+
     #[error("Invalid request: {0}")]
     InvalidRequest(String),
 }
@@ -42,18 +42,18 @@ pub enum GovernorError {
 /// Governor configuration
 #[derive(Debug, Clone)]
 pub struct GovernorConfig {
-    /// Listen address for gRPC server
+    /// Listen address for TCP server
     pub listen_address: String,
-    
+
     /// Maximum concurrent executions
     pub max_concurrent: usize,
-    
+
     /// Default timeout in milliseconds
     pub default_timeout_ms: u64,
-    
+
     /// Enable audit logging
     pub audit_enabled: bool,
-    
+
     /// Audit log path
     pub audit_log_path: String,
 }
@@ -72,6 +72,7 @@ impl Default for GovernorConfig {
 
 /// Safety Governor - the security enforcement layer
 pub struct SafetyGovernor {
+    #[allow(dead_code)]
     config: GovernorConfig,
     permissions: permissions::PermissionManager,
     sandbox: sandbox::SandboxExecutor,
@@ -86,7 +87,7 @@ impl SafetyGovernor {
         let sandbox = sandbox::SandboxExecutor::new()?;
         let audit = audit::AuditTrail::new(&config.audit_log_path)?;
         let filters = filters::FilterChain::default();
-        
+
         Ok(Self {
             config,
             permissions,
@@ -95,15 +96,15 @@ impl SafetyGovernor {
             filters,
         })
     }
-    
+
     /// Check if an action is permitted
     pub fn check_permission(&self, agent_id: &str, action: &str, resource: &str) -> Result<bool, GovernorError> {
         self.permissions.check(agent_id, action, resource)
     }
-    
+
     /// Execute a command in the sandbox
     pub async fn execute_sandboxed(
-        &self,
+        &mut self,
         command: &str,
         options: sandbox::ExecutionOptions,
     ) -> Result<sandbox::ExecutionResult, GovernorError> {
@@ -111,32 +112,38 @@ impl SafetyGovernor {
         if let Some(detection) = self.filters.scan(command) {
             return Err(GovernorError::InjectionDetected(detection));
         }
-        
+
         // Execute in sandbox
         let result = self.sandbox.execute(command, options).await
             .map_err(|e| GovernorError::SandboxError(e.to_string()))?;
-        
+
         // Log to audit trail
         if self.config.audit_enabled {
-            self.audit.log_execution(command, &result)?;
+            self.audit.log_execution(command, &result)
+                .map_err(|e| GovernorError::AuditError(e.to_string()))?;
         }
-        
+
         Ok(result)
     }
-    
+
     /// Get the audit trail
     pub fn get_audit_trail(&self) -> &audit::AuditTrail {
         &self.audit
     }
-    
+
     /// Get permission manager
     pub fn get_permissions(&self) -> &permissions::PermissionManager {
         &self.permissions
     }
-    
+
     /// Get sandbox executor
     pub fn get_sandbox(&self) -> &sandbox::SandboxExecutor {
         &self.sandbox
+    }
+
+    /// Get filter chain
+    pub fn get_filters(&self) -> &filters::FilterChain {
+        &self.filters
     }
 }
 
