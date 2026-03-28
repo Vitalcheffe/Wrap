@@ -1,57 +1,92 @@
-# Wrap (NEBULA)
+<p align="center">
+  <img src="docs/banner.png" alt="WRAP NEBULA" width="100%" />
+</p>
 
-A personal AI assistant that runs on your machine. Talks to you on Telegram, Discord, or web. No cloud, no subscription.
+<h1 align="center">WRAP NEBULA</h1>
+<p align="center">The AI kernel for secure, local-first agentic infrastructure.<br/>Zero-trust. 100% private. Every skill verified before it runs.</p>
 
-## The idea
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Rust-Governor-DEA584?logo=rust" />
+  <img src="https://img.shields.io/badge/Tests-29%2F29-brightgreen" />
+  <img src="https://img.shields.io/badge/License-MIT-green" />
+</p>
 
-I wanted an AI assistant I could actually trust. Every framework I tried either sent data to the cloud, ran arbitrary code without checking it, or was so complex I couldn't audit it.
+---
 
-So I built one where every skill is verified before it runs, there's a cryptographic audit trail, and nothing leaves your machine without permission.
+## Why
+
+Every AI framework I tried either sent data to the cloud, ran arbitrary code without checking it, or was so complex I couldn't audit it.
+
+I wanted something I could actually trust. So I built it.
 
 ## What it does
 
-- Runs locally on your computer
-- Responds on Telegram, Discord, or a web dashboard
-- Skills are sandboxed in V8 isolates — no native fs access
+- Runs locally on your machine
+- Responds on Telegram, Discord, or web
+- Every skill is sandboxed in V8 isolates — no native fs access
 - PII auto-redaction (SSN, credit cards, emails, phones)
-- Everything gets logged with Ed25519 signatures
+- Ed25519 audit trail — cryptographically immutable
 
 ## Security model
 
-The Rust Governor validates every action before it runs:
-- Permission system — zero permissions by default
-- Injection filter (prompt injection, SQL, XSS)
-- V8 sandbox execution
-- Immutable audit trail (Ed25519 hash chain)
+```
+User Input
+  → InputSanitizer (prompt injection detection)
+  → Core Engine (TypeScript)
+  → Rust Safety Governor
+      ├── Permissions (capability-based, zero by default)
+      ├── InjectionFilter (prompt · SQL · XSS)
+      ├── SandboxExecutor (V8 isolate)
+      └── AuditTrail (Ed25519 hash chain)
+  → Policy Engine (YAML, hot-reload)
+      ├── PII redaction
+      └── Content policy
+```
 
-The policy engine handles PII redaction and content rules. YAML config, hot-reload.
+No config needed. Just markdown:
+
+```markdown
+# SOUL.md
+Name: Aria
+Personality: Curious and direct
+Skills: web.search, files.read, reminder.set
+Rules: Never share API keys. Ask before deleting.
+```
 
 ## Quick start
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash
-nebula init    # interactive wizard, 5 questions
-nebula start   # you're live on Telegram
+nebula init
+nebula start
 ```
+
+Your agent is live on Telegram. That's it.
 
 ## Skills
 
-- web.search, files.read/write/list, code.run, reminder.set/list, git.status
-- More coming in v8
+`web.search` · `files.read` · `files.write` · `files.list` · `code.run` · `reminder.set` · `reminder.list` · `git.status`
 
 ## Works with any model
 
-Claude, GPT-4, or any Ollama model (free, local). Just edit one line in SOUL.md.
+Claude, GPT-4, or any Ollama model (free, local). One line in SOUL.md.
 
 ## Where it's at
 
-- v7 (now): Core, Telegram, 10 skills, memory, one-line install
-- v8: Discord, skill registry, 30+ skills, Docker
-- v9: WhatsApp, voice, mobile app
-- v10: Multi-agent workflows
-
-29/29 tests passing. 0 TypeScript errors. ~20K lines.
+| Version | What |
+|---|---|
+| v7 (now) | Zero Trust core · Telegram · 10 skills · Memory |
+| v8 | Discord · Skill registry · 30+ skills · Docker |
+| v9 | WhatsApp · Voice · Mobile app |
+| v10 | Multi-agent workflows |
 
 ## Contributing
 
-Write skills in TypeScript, extend the Core, or audit the Rust Governor. Open an issue if you find something.
+Write skills in TypeScript. Extend the Core. Audit the Rust Governor. Open an issue.
+
+---
+
+<p align="center">
+  <sub>Amine Harch · 16 · Casablanca · <a href="https://vitalcheffe.github.io">vitalcheffe.github.io</a></sub>
+</p>
