@@ -244,58 +244,33 @@ footer .cp a{color:var(--ac)}
 <!-- DASHBOARD -->
 <section class="sec" id="dashboard">
 <h2>Full control. No terminal required.</h2>
-<p class="sub">Visual interface to manage agents, monitor activity, create sub-agents.</p>
-<div class="dash">
-<div class="dash-side">
-<div class="dash-logo"><img src="media/logo-white.PNG" alt="WRAP"></div>
-<div class="dash-nav">
-<div class="dash-nav-item active">● Agents</div>
-<div class="dash-nav-item">○ Skills</div>
-<div class="dash-nav-item">○ Audit Log</div>
-<div class="dash-nav-item">○ Settings</div>
+<p class="sub">Visual dashboard to manage agents, monitor activity, and create sub-agents. Available after connecting your agent.</p>
+<div style="background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:48px;text-align:center">
+<div style="margin-bottom:24px">
+<div style="font-size:48px;margin-bottom:16px">📊</div>
+<h3 style="font-size:20px;margin-bottom:8px">Visual Agent Dashboard</h3>
+<p style="color:var(--tx2);font-size:14px;max-width:500px;margin:0 auto;line-height:1.6">Manage your agents, monitor live activity, create sub-agents, view audit logs — all from a clean web interface running on your machine.</p>
 </div>
-<div class="dash-user">
-<div class="dash-avatar">V</div>
-<div><div style="font-weight:500;color:var(--tx)">VitalCheffe</div><div style="font-size:11px">v8.0 · Online</div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:600px;margin:24px auto 0;text-align:left">
+<div style="background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:16px">
+<div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Agents</div>
+<div style="font-size:14px">Create, configure, monitor</div>
+</div>
+<div style="background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:16px">
+<div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Skills</div>
+<div style="font-size:14px">Test, install, manage</div>
+</div>
+<div style="background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:16px">
+<div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Audit</div>
+<div style="font-size:14px">Every action, signed</div>
+</div>
+<div style="background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:16px">
+<div style="font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Settings</div>
+<div style="font-size:14px">SOUL.md, auth, config</div>
 </div>
 </div>
-<div class="dash-main">
-<div class="dash-top">
-<h3>Agents</h3>
-<button class="dash-new">+ New Agent</button>
-</div>
-<div class="agents">
-<div class="agent">
-<div class="agent-top"><span class="agent-name">Aria</span><span class="agent-status"><span class="dot"></span> Online</span></div>
-<div class="agent-model">Model: Ollama llama3</div>
-<div class="agent-skills">Skills: web.search · files.read · code.run · reminder.set</div>
-<div class="agent-meta"><span>42 messages today</span><span>Last: 2 min ago</span></div>
-<div class="agent-btns"><button>Configure</button><button>View Logs</button></div>
-</div>
-<div class="agent">
-<div class="agent-top"><span class="agent-name">CodeBot</span><span class="agent-status"><span class="dot"></span> Online</span></div>
-<div class="agent-model">Model: Claude 3.5 Sonnet</div>
-<div class="agent-skills">Skills: code.run · git.status · code.edit</div>
-<div class="agent-meta"><span>17 tasks today</span><span>Last: 5 min ago</span></div>
-<div class="agent-btns"><button>Configure</button><button>View Logs</button></div>
-</div>
-<div class="agent">
-<div class="agent-top"><span class="agent-name">ResearchBot</span><span class="agent-status idle"><span class="dot"></span> Idle</span></div>
-<div class="agent-model">Model: GPT-4o</div>
-<div class="agent-skills">Skills: web.search · files.write · calendar.read</div>
-<div class="agent-meta"><span>3 tasks today</span><span>Last: 1h ago</span></div>
-<div class="agent-btns"><button>Configure</button><button>View Logs</button></div>
-</div>
-<div class="agent-add"><div class="plus">+</div><span>Create sub-agent</span></div>
-</div>
-<div class="activity">
-<h4><span class="live"></span> Live Activity</h4>
-<div class="act-row"><span class="agent-tag">Aria</span><span class="action">web.search "latest AI news" → 5 results</span><span class="time">2m ago</span></div>
-<div class="act-row"><span class="agent-tag">CodeBot</span><span class="action">code.run fibonacci.py → Exit 0</span><span class="time">5m ago</span></div>
-<div class="act-row"><span class="agent-tag">Aria</span><span class="action">files.read report.txt → 2.4KB</span><span class="time">8m ago</span></div>
-<div class="act-row"><span class="agent-tag">CodeBot</span><span class="action">git.status → 3 modified files</span><span class="time">12m ago</span></div>
-<div class="act-row"><span class="agent-tag">Research</span><span class="action">web.search "rust async" → 5 results</span><span class="time">1h ago</span></div>
-</div>
+<div style="margin-top:24px">
+<a href="#install" class="cta-p">Get started →</a>
 </div>
 </div>
 </section>
