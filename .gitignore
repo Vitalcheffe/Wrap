@@ -11,3 +11,10 @@ node_modules/
 dist/
 target/
 packages/core/node_modules/
+node_modules/
+dist/
+.next/
+target/
+*.vsix
+packages/core/node_modules/
+output.txt

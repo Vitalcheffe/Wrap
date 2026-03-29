@@ -1,6 +1,6 @@
 {
   "name": "wrap-nebula",
-  "displayName": "WRAP NEBULA — Zero Trust AI Agent",
+  "displayName": "WRAP NEBULA \u2014 Zero Trust AI Agent",
   "description": "The only AI coding agent with V8 sandbox, Ed25519 audit trail, and PII auto-redaction",
   "version": "0.9.0",
   "publisher": "VitalCheffe",
@@ -163,5 +163,10 @@
   "bugs": {
     "url": "https://github.com/Vitalcheffe/Wrap/issues"
   },
-  "homepage": "https://github.com/Vitalcheffe/Wrap#readme"
+  "homepage": "https://github.com/Vitalcheffe/Wrap#readme",
+  "files": [
+    "dist/**",
+    "media/**",
+    "LICENSE"
+  ]
 }
