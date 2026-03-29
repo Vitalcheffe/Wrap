@@ -19,3 +19,5 @@ target/
 packages/core/node_modules/
 output.txt
 auth.json
+auth-profiles.json
+.nebula/
