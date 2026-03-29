@@ -182,6 +182,130 @@ cmd_start() {
   npx tsx scripts/start.ts
 }
 
+cmd_skill() {
+  print_banner
+  local action="${2:-help}"
+  local SKILLS_DIR="${WRAP_DATA_DIR:-$HOME/.wrap}/skills-installed"
+  mkdir -p "$SKILLS_DIR"
+
+  case $action in
+    list)
+      echo -e "${CYAN}Installed Skills:${NC}"
+      echo ""
+      if [ -z "$(ls -A "$SKILLS_DIR" 2>/dev/null)" ]; then
+        echo "  No skills installed."
+        echo "  Install: nebula skill install <path>"
+      else
+        for dir in "$SKILLS_DIR"/*/; do
+          if [[ -f "$dir/wrap-skill.json" ]]; then
+            name=$(python3 -c "import json; print(json.load(open('${dir}wrap-skill.json'))['name'])" 2>/dev/null || basename "$dir")
+            ver=$(python3 -c "import json; print(json.load(open('${dir}wrap-skill.json'))['version'])" 2>/dev/null || "?")
+            desc=$(python3 -c "import json; print(json.load(open('${dir}wrap-skill.json'))['description'])" 2>/dev/null || "")
+            echo -e "  ${GREEN}$name${NC} v$ver"
+            echo -e "    $desc"
+          fi
+        done
+      fi
+      ;;
+    install)
+      local source="${3:-}"
+      if [[ -z "$source" ]]; then
+        echo -e "${RED}Usage: nebula skill install <path>${NC}"
+        exit 1
+      fi
+      if [[ ! -f "$source/wrap-skill.json" ]]; then
+        echo -e "${RED}No wrap-skill.json found in $source${NC}"
+        exit 1
+      fi
+      name=$(python3 -c "import json; print(json.load(open('${source}/wrap-skill.json'))['name'])")
+      dest="$SKILLS_DIR/$name"
+      cp -r "$source" "$dest"
+      # Compute hash
+      main=$(python3 -c "import json; print(json.load(open('${source}/wrap-skill.json'))['main'])")
+      if [[ -f "$dest/$main" ]]; then
+        hash=$(sha256sum "$dest/$main" | cut -d' ' -f1)
+        python3 -c "
+import json
+m = json.load(open('${dest}/wrap-skill.json'))
+m['hash'] = '${hash}'
+json.dump(m, open('${dest}/wrap-skill.json', 'w'), indent=2)
+"
+      fi
+      echo -e "${GREEN}✓${NC} Installed $name"
+      ;;
+    remove)
+      local name="${3:-}"
+      if [[ -z "$name" ]]; then
+        echo -e "${RED}Usage: nebula skill remove <name>${NC}"
+        exit 1
+      fi
+      if [[ -d "$SKILLS_DIR/$name" ]]; then
+        rm -rf "$SKILLS_DIR/$name"
+        echo -e "${GREEN}✓${NC} Removed $name"
+      else
+        echo -e "${RED}Skill $name not found${NC}"
+      fi
+      ;;
+    create)
+      local name="${3:-my-skill}"
+      local dest="$SKILLS_DIR/$name"
+      mkdir -p "$dest"
+      cat > "$dest/wrap-skill.json" << MANIFEST
+{
+  "name": "$name",
+  "version": "0.1.0",
+  "description": "A custom WRAP NEBULA skill",
+  "author": {
+    "name": "$(whoami)"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "category": "custom",
+  "permissions": [],
+  "dangerous": false
+}
+MANIFEST
+      cat > "$dest/index.js" << 'SKILL'
+// WRAP NEBULA Skill
+// Export your skill handler
+
+module.exports = {
+  name: 'my-skill',
+  description: 'A custom skill',
+  category: 'custom',
+  permissions: [],
+  dangerous: false,
+  parameters: {
+    type: 'object',
+    properties: {
+      input: { type: 'string', description: 'Input parameter' }
+    },
+    required: ['input']
+  },
+  handler: async (params) => {
+    const input = params.input;
+    return {
+      success: true,
+      output: `Processed: ${input}`
+    };
+  }
+};
+SKILL
+      echo -e "${GREEN}✓${NC} Created skill at $dest"
+      echo "  Edit $dest/index.js to implement your skill"
+      ;;
+    help|*)
+      echo "Usage: nebula skill <action> [args]"
+      echo ""
+      echo "Actions:"
+      echo "  list              List installed skills"
+      echo "  install <path>    Install a skill from a directory"
+      echo "  remove <name>     Remove an installed skill"
+      echo "  create [name]     Create a new skill template"
+      ;;
+  esac
+}
+
 cmd_status() {
   print_banner
   if [[ -f "$ENV_FILE" ]]; then
@@ -205,6 +329,7 @@ case "${1:-help}" in
   init)    cmd_init ;;
   start)   cmd_start ;;
   status)  cmd_status ;;
+  skill)   cmd_skill "$@" ;;
   help|*)
     print_banner
     echo "Usage: nebula <command>"
@@ -213,6 +338,7 @@ case "${1:-help}" in
     echo "  init     Interactive setup wizard"
     echo "  start    Start the agent"
     echo "  status   Show configuration"
+    echo "  skill    Manage skills (list/install/remove/create)"
     echo "  help     Show this help"
     ;;
 esac

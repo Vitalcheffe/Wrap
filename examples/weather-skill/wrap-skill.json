@@ -1,0 +1,16 @@
+{
+  "name": "weather.check",
+  "version": "1.0.0",
+  "description": "Check current weather for a location using wttr.in (no API key needed)",
+  "author": {
+    "name": "VitalCheffe",
+    "url": "https://github.com/Vitalcheffe"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "category": "web",
+  "permissions": ["network:https"],
+  "dangerous": false,
+  "keywords": ["weather", "forecast", "temperature"],
+  "repository": "https://github.com/Vitalcheffe/wrap-skills"
+}
