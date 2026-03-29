@@ -1,832 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WRAP NEBULA — Zero Trust AI Agent</title>
-  <meta name="description" content="The only AI agent with V8 sandbox, Ed25519 audit trail, and cryptographic guarantees. Local-first. Zero-trust.">
-  <style>
-    :root {
-      --bg: #0a0a0b;
-      --surface: #111113;
-      --surface-2: #18181b;
-      --border: #27272a;
-      --text: #fafafa;
-      --text-dim: #71717a;
-      --accent: #22c55e;
-      --accent-dim: #16a34a;
-      --red: #ef4444;
-      --blue: #3b82f6;
-      --yellow: #eab308;
-      --font: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    ::selection { background: var(--accent); color: var(--bg); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WRAP NEBULA</title>
+<link rel="icon" href="media/logo-white.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#000;--s:#0a0a0a;--s2:#111;--b:#1a1a1a;--t:#e4e4e7;--d:#71717a;--g:#22c55e;--r:#ef4444;--bl:#3b82f6;--f:'SF Mono','Cascadia Code',monospace;--sf:-apple-system,system-ui,sans-serif}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--t);font-family:var(--sf);-webkit-font-smoothing:antialiased}
+::selection{background:var(--g);color:#000}a{color:inherit;text-decoration:none}
 
-    /* ─── NAV ─── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(10, 10, 11, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 48px;
-      height: 56px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .nav-brand {
-      display: flex; align-items: center; gap: 10px;
-      font-family: var(--font); font-weight: 600; font-size: 14px;
-      letter-spacing: 0.5px;
-    }
-    .nav-brand .shield { color: var(--accent); font-size: 18px; }
-    .nav-links { display: flex; gap: 32px; align-items: center; }
-    .nav-links a {
-      color: var(--text-dim); text-decoration: none; font-size: 13px;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
-    .nav-cta {
-      background: var(--accent); color: var(--bg); padding: 6px 16px;
-      border-radius: 6px; font-size: 13px; font-weight: 600;
-      text-decoration: none; transition: background 0.2s;
-    }
-    .nav-cta:hover { background: var(--accent-dim); }
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--b);padding:0 40px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.nl{display:flex;align-items:center;gap:10px;font-family:var(--f);font-size:13px;font-weight:600;letter-spacing:1px}
+.nr{display:flex;gap:28px;align-items:center}
+.nr a{color:var(--d);font-size:11px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.nr a:hover{color:var(--t)}
+.nb{background:var(--g);color:#000;padding:6px 14px;border-radius:4px;font-size:11px;font-weight:600}
 
-    /* ─── HERO ─── */
-    .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center;
-      padding: 120px 24px 80px;
-      position: relative;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.08) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 100px; padding: 6px 16px;
-      font-size: 12px; color: var(--text-dim);
-      margin-bottom: 32px;
-    }
-    .hero-badge .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent);
-      animation: pulse-dot 2s infinite;
-    }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    .hero h1 {
-      font-size: clamp(40px, 7vw, 80px);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -2px;
-      max-width: 900px;
-      margin-bottom: 24px;
-    }
-    .hero h1 .accent { color: var(--accent); }
-    .hero p {
-      font-size: 18px; color: var(--text-dim);
-      max-width: 560px; line-height: 1.7;
-      margin-bottom: 40px;
-    }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    .btn-primary {
-      background: var(--accent); color: var(--bg); padding: 12px 28px;
-      border-radius: 8px; font-size: 15px; font-weight: 600;
-      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-      transition: all 0.2s;
-    }
-    .btn-primary:hover { background: var(--accent-dim); transform: translateY(-1px); }
-    .btn-secondary {
-      background: var(--surface-2); color: var(--text); padding: 12px 28px;
-      border-radius: 8px; font-size: 15px; font-weight: 500;
-      text-decoration: none; border: 1px solid var(--border);
-      display: inline-flex; align-items: center; gap: 8px;
-      transition: all 0.2s;
-    }
-    .btn-secondary:hover { border-color: var(--text-dim); }
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(34,197,94,.04) 0%,transparent 70%);pointer-events:none}
+.ht{font-family:var(--f);font-size:10px;color:var(--d);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;display:flex;align-items:center;gap:8px}
+.ht .dot{width:5px;height:5px;border-radius:50%;background:var(--g);animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(36px,6vw,72px);font-weight:800;line-height:1.05;letter-spacing:-3px;max-width:800px;margin-bottom:20px}
+.hero h1 span{color:var(--g)}
+.hero p{font-size:16px;color:var(--d);max-width:520px;line-height:1.8;margin-bottom:40px}
+.hb{display:flex;gap:12px}
+.btn{padding:12px 24px;border-radius:6px;font-size:14px;font-weight:600;transition:all .2s}
+.bp{background:var(--g);color:#000}.bp:hover{opacity:.9;transform:translateY(-1px)}
+.bs{background:var(--s2);color:var(--t);border:1px solid var(--b)}.bs:hover{border-color:var(--d)}
 
-    /* ─── TERMINAL ─── */
-    .terminal-section {
-      padding: 80px 24px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .terminal {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      font-family: var(--font);
-      font-size: 13px;
-    }
-    .terminal-bar {
-      background: var(--surface-2);
-      padding: 10px 16px;
-      display: flex; align-items: center; gap: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .terminal-dot.red { background: #ff5f57; }
-    .terminal-dot.yellow { background: #febc2e; }
-    .terminal-dot.green { background: #28c840; }
-    .terminal-title { color: var(--text-dim); font-size: 12px; margin-left: 12px; }
-    .terminal-body { padding: 20px; line-height: 1.8; }
-    .terminal-body .prompt { color: var(--accent); }
-    .terminal-body .output { color: var(--text-dim); }
-    .terminal-body .success { color: var(--accent); }
-    .terminal-body .error { color: var(--red); }
-    .terminal-body .info { color: var(--blue); }
-    .terminal-body .dim { color: #52525b; }
+.mtr{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:8px;overflow:hidden;max-width:800px;margin:0 auto 80px}
+.m{background:var(--s);padding:28px;text-align:center}
+.mv{font-family:var(--f);font-size:28px;font-weight:700;color:var(--g)}
+.ml{font-size:10px;color:var(--d);margin-top:4px;text-transform:uppercase;letter-spacing:1.5px}
 
-    /* ─── METRICS ─── */
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      max-width: 900px;
-      margin: 0 auto 80px;
-    }
-    .metric {
-      background: var(--surface);
-      padding: 24px;
-      text-align: center;
-    }
-    .metric-value {
-      font-family: var(--font);
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-    .metric-label {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 4px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+.tm{max-width:820px;margin:0 auto 80px;background:var(--s);border:1px solid var(--b);border-radius:8px;overflow:hidden;font-family:var(--f);font-size:12px}
+.tb{background:var(--s2);padding:8px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--b)}
+.td{width:9px;height:9px;border-radius:50%}.td.r{background:#ff5f57}.td.y{background:#febc2e}.td.g{background:#28c840}
+.tt{color:var(--d);font-size:11px;margin-left:10px}
+.tp{padding:16px;line-height:1.9}
+.p{color:var(--g)}.o{color:var(--d)}.s{color:var(--g)}.e{color:var(--r)}.i{color:var(--bl)}.dm{color:#3f3f46}
 
-    /* ─── FEATURES ─── */
-    .features {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 80px 24px;
-    }
-    .features h2 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .features .subtitle {
-      color: var(--text-dim);
-      margin-bottom: 48px;
-      font-size: 16px;
-    }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .feature {
-      background: var(--surface);
-      padding: 32px;
-    }
-    .feature-icon {
-      font-size: 24px;
-      margin-bottom: 16px;
-    }
-    .feature h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .feature p {
-      font-size: 14px;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }
-    .feature code {
-      background: var(--surface-2);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: var(--font);
-      font-size: 12px;
-      color: var(--accent);
-    }
+.sec{max-width:1000px;margin:0 auto;padding:80px 24px}
+.sec h2{font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-1px}
+.sec .sub{color:var(--d);font-size:14px;margin-bottom:48px}
 
-    /* ─── ARCHITECTURE ─── */
-    .architecture {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 80px 24px;
-    }
-    .architecture h2 {
-      font-size: 32px; font-weight: 700; margin-bottom: 48px;
-    }
-    .arch-flow {
-      display: flex; flex-direction: column; gap: 0;
-    }
-    .arch-step {
-      display: flex; align-items: center; gap: 16px;
-      padding: 16px 20px;
-      background: var(--surface);
-      border-left: 2px solid var(--border);
-      position: relative;
-    }
-    .arch-step.active { border-left-color: var(--accent); }
-    .arch-step.blocked { border-left-color: var(--red); }
-    .arch-step-num {
-      font-family: var(--font);
-      font-size: 12px;
-      color: var(--text-dim);
-      min-width: 24px;
-    }
-    .arch-step-name {
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .arch-step-desc {
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-left: auto;
-    }
-    .arch-arrow {
-      padding: 8px 20px;
-      color: var(--text-dim);
-      font-size: 12px;
-      border-left: 2px solid var(--border);
-    }
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:8px;overflow:hidden}
+.fe{background:var(--s);padding:28px}.fe .ic{font-size:20px;margin-bottom:12px}
+.fe h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.fe p{font-size:13px;color:var(--d);line-height:1.6}
+.fe code{background:var(--s2);padding:1px 5px;border-radius:3px;font-family:var(--f);font-size:11px;color:var(--g)}
 
-    /* ─── COMPARISON ─── */
-    .comparison {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 80px 24px;
-    }
-    .comparison h2 {
-      font-size: 32px; font-weight: 700; margin-bottom: 48px;
-    }
-    .comparison table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .comparison th, .comparison td {
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    .comparison th {
-      color: var(--text-dim);
-      font-weight: 500;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .comparison td:first-child { font-weight: 500; }
-    .comparison .highlight { color: var(--accent); font-weight: 600; }
-    .comparison .yes { color: var(--accent); }
-    .comparison .no { color: var(--red); }
-    .comparison .partial { color: var(--yellow); }
+.fl{display:flex;flex-direction:column}
+.fs{display:flex;align-items:center;padding:14px 18px;background:var(--s);border-left:2px solid var(--b)}
+.fs.a{border-left-color:var(--g)}.fs.b{border-left-color:var(--r)}
+.fn{font-family:var(--f);font-size:11px;color:var(--d);min-width:28px}
+.fm{font-weight:600;font-size:13px}
+.fd{font-size:12px;color:var(--d);margin-left:auto}
+.fa{padding:4px 18px;color:#27272a;font-size:10px;border-left:2px solid var(--b)}
 
-    /* ─── CODE ─── */
-    .code-section {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 80px 24px;
-    }
-    .code-section h2 {
-      font-size: 32px; font-weight: 700; margin-bottom: 12px;
-    }
-    .code-section .subtitle {
-      color: var(--text-dim); margin-bottom: 48px;
-    }
-    .code-block {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
-    .code-block-header {
-      background: var(--surface-2);
-      padding: 10px 16px;
-      font-family: var(--font);
-      font-size: 12px;
-      color: var(--text-dim);
-      border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between;
-    }
-    .code-block pre {
-      padding: 20px;
-      overflow-x: auto;
-      font-family: var(--font);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-    .code-block .kw { color: #c678dd; }
-    .code-block .fn { color: #61afef; }
-    .code-block .str { color: #98c379; }
-    .code-block .comment { color: #5c6370; font-style: italic; }
-    .code-block .num { color: #d19a66; }
+.cmp{width:100%;border-collapse:collapse;font-size:13px}
+.cmp th,.cmp td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--b)}
+.cmp th{color:var(--d);font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.y{color:var(--g)}.n{color:var(--r)}.h{color:var(--g);font-weight:600}
 
-    /* ─── FOOTER ─── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 48px 24px;
-      text-align: center;
-      color: var(--text-dim);
-      font-size: 13px;
-    }
-    footer a { color: var(--accent); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-    .footer-links {
-      display: flex; gap: 24px; justify-content: center;
-      margin-bottom: 16px;
-    }
+.cb{background:var(--s);border:1px solid var(--b);border-radius:8px;overflow:hidden;margin-bottom:20px}
+.ch{background:var(--s2);padding:8px 14px;font-family:var(--f);font-size:11px;color:var(--d);border-bottom:1px solid var(--b);display:flex;justify-content:space-between}
+.cb pre{padding:16px;overflow-x:auto;font-family:var(--f);font-size:12px;line-height:1.7}
+.kw{color:#c678dd}.fn{color:#61afef}.st{color:#98c379}.cm{color:#5c6370;font-style:italic}.nu{color:#d19a66}
 
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 768px) {
-      nav { padding: 0 16px; }
-      .nav-links { display: none; }
-      .hero { padding: 100px 16px 60px; }
-      .hero h1 { font-size: 32px; letter-spacing: -1px; }
-      .hero p { font-size: 15px; }
-      .metrics { grid-template-columns: repeat(2, 1fr); }
-      .feature-grid { grid-template-columns: 1fr; }
-      .comparison { overflow-x: auto; }
-      .comparison table { min-width: 600px; }
-    }
-  
-    /* DASHBOARD */
-    .dashboard { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
-    .dashboard h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
-    .dashboard .subtitle { color: var(--text-dim); margin-bottom: 48px; }
-    .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .dash-panel { background: var(--surface); padding: 24px; }
-    .dash-panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 16px; }
-    .dash-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
-    .dash-stat:last-child { border: none; }
-    .dash-stat-label { font-size: 13px; color: var(--text-dim); }
-    .dash-stat-value { font-family: var(--font); font-size: 14px; }
-    .dash-stat-value.up { color: var(--accent); }
-    .dash-stat-value.down { color: var(--red); }
+.sl{display:flex;flex-direction:column}
+.sll{display:flex;background:var(--s);border:1px solid var(--b);border-bottom:none}
+.sll:first-child{border-radius:8px 8px 0 0}.sll:last-child{border-radius:0 0 8px 8px;border-bottom:1px solid var(--b)}
+.sln{display:flex;align-items:center;justify-content:center;width:44px;background:var(--s2);border-right:1px solid var(--b);font-family:var(--f);font-size:11px;color:var(--d)}
+.slc{padding:16px 20px;flex:1}.slc strong{font-size:13px;display:block;margin-bottom:2px}.slc span{font-size:12px;color:var(--d)}
 
-    /* SECURITY */
-    .security { max-width: 1000px; margin: 0 auto; padding: 80px 24px; }
-    .security h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
-    .security .subtitle { color: var(--text-dim); margin-bottom: 48px; }
-    .sec-layers { display: flex; flex-direction: column; }
-    .sec-layer { display: flex; background: var(--surface); border: 1px solid var(--border); border-bottom: none; }
-    .sec-layer:first-child { border-radius: 12px 12px 0 0; }
-    .sec-layer:last-child { border-radius: 0 0 12px 12px; border-bottom: 1px solid var(--border); }
-    .sec-layer-num { display: flex; align-items: center; justify-content: center; width: 48px; background: var(--surface-2); border-right: 1px solid var(--border); font-family: var(--font); font-size: 12px; color: var(--text-dim); }
-    .sec-layer-content { padding: 20px 24px; flex: 1; }
-    .sec-layer-name { font-weight: 600; margin-bottom: 4px; }
-    .sec-layer-desc { font-size: 13px; color: var(--text-dim); }
+.ri{display:flex;gap:14px;padding:16px 18px;background:var(--s);border-left:2px solid var(--b)}
+.ri.d{border-left-color:var(--g)}.ri.c{border-left-color:var(--bl)}.ri.f{border-left-color:var(--b);opacity:.6}
+.rv{font-family:var(--f);font-size:13px;font-weight:600;min-width:40px}
+.rd h4{font-size:14px;margin-bottom:2px}.rd p{font-size:12px;color:var(--d)}
+.rs{margin-left:auto;font-size:10px;padding:2px 10px;border-radius:100px;align-self:center}
+.rs.d{background:rgba(34,197,94,.12);color:var(--g)}.rs.c{background:rgba(59,130,246,.12);color:var(--bl)}.rs.f{background:var(--s2);color:var(--d)}
 
-    /* ROADMAP */
-    .roadmap { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
-    .roadmap h2 { font-size: 32px; font-weight: 700; margin-bottom: 48px; }
-    .roadmap-items { display: flex; flex-direction: column; }
-    .roadmap-item { display: flex; gap: 16px; padding: 20px; background: var(--surface); border-left: 2px solid var(--border); }
-    .roadmap-item.done { border-left-color: var(--accent); }
-    .roadmap-item.current { border-left-color: var(--blue); }
-    .roadmap-item.future { border-left-color: var(--border); opacity: 0.7; }
-    .roadmap-version { font-family: var(--font); font-size: 14px; font-weight: 600; min-width: 48px; }
-    .roadmap-details h4 { font-size: 15px; margin-bottom: 4px; }
-    .roadmap-details p { font-size: 13px; color: var(--text-dim); }
-    .roadmap-status { margin-left: auto; font-size: 12px; padding: 2px 10px; border-radius: 100px; align-self: center; }
-    .roadmap-status.done { background: rgba(34,197,94,0.15); color: var(--accent); }
-    .roadmap-status.current { background: rgba(59,130,246,0.15); color: var(--blue); }
-    .roadmap-status.future { background: var(--surface-2); color: var(--text-dim); }
+footer{border-top:1px solid var(--b);padding:40px 24px;text-align:center;font-size:12px;color:var(--d)}
+footer a{color:var(--g)}
+.flk{display:flex;gap:20px;justify-content:center;margin-bottom:12px}
 
-    @media (max-width: 768px) { .dash-grid { grid-template-columns: 1fr; } }
-
-  </style>
+@media(max-width:768px){nav{padding:0 16px}.nr{display:none}.hero h1{font-size:28px;letter-spacing:-1px}.mtr{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-brand">
-      <span class="shield">🛡️</span>
-      <span>WRAP NEBULA</span>
-    </div>
-    <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#architecture">Architecture</a>
-      <a href="#comparison">Comparison</a>
-      <a href="#code">Code</a>
-      <a href="https://github.com/Vitalcheffe/Wrap">GitHub</a>
-      <a href="#install" class="nav-cta">Install</a>
-    </div>
-  </nav>
+<nav>
+<div class="nl"><span style="color:var(--g)">◆</span> WRAP NEBULA</div>
+<div class="nr"><a href="#features">Features</a><a href="#architecture">Architecture</a><a href="#compare">Compare</a><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="#install" class="nb">Install</a></div>
+</nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-badge">
-      <span class="dot"></span>
-      <span>v8.0 — Local-first, zero-trust, auditable</span>
-    </div>
-    <h1>The AI agent you can<br><span class="accent">actually verify.</span></h1>
-    <p>
-      Every other coding agent sends your code to the cloud with no sandbox, no audit trail, no guarantees.
-      WRAP NEBULA runs locally, executes in V8 isolates, and signs every action with Ed25519.
-    </p>
-    <div class="hero-actions">
-      <a href="#install" class="btn-primary">curl | bash →</a>
-      <a href="https://github.com/Vitalcheffe/Wrap" class="btn-secondary">View on GitHub</a>
-    </div>
-  </section>
+<section class="hero">
+<div class="ht"><span class="dot"></span> v8.0 · local-first · zero-trust</div>
+<h1>The AI agent<br>you can <span>verify</span>.</h1>
+<p>No cloud. No trust. Every action sandboxed, signed, auditable. Runs on your machine with Ollama. Free.</p>
+<div class="hb"><a href="#install" class="btn bp">curl | bash →</a><a href="https://github.com/Vitalcheffe/Wrap" class="btn bs">Source</a></div>
+</section>
 
-  <!-- TERMINAL -->
-  <section class="terminal-section">
-    <div class="terminal">
-      <div class="terminal-bar">
-        <div class="terminal-dot red"></div>
-        <div class="terminal-dot yellow"></div>
-        <div class="terminal-dot green"></div>
-        <span class="terminal-title">terminal — nebula</span>
-      </div>
-      <div class="terminal-body">
-        <div><span class="prompt">$</span> curl -fsSL https://wrap.dev/install | bash</div>
-        <div class="output dim">  Installing WRAP NEBULA v8.0...</div>
-        <div class="success">  ✓ Node.js v22.22.1</div>
-        <div class="success">  ✓ Dependencies installed</div>
-        <div class="success">  ✓ CLI created at ~/.local/bin/nebula</div>
-        <div class="dim"></div>
-        <div><span class="prompt">$</span> nebula init</div>
-        <div class="output">  ? AI backend: <span class="info">Ollama (free, local)</span></div>
-        <div class="output">  ? Agent name: <span class="info">Aria</span></div>
-        <div class="success">  ✓ Config saved</div>
-        <div class="dim"></div>
-        <div><span class="prompt">$</span> nebula start</div>
-        <div class="success">  ✓ Ollama connected (llama3)</div>
-        <div class="success">  ✓ Aria loaded</div>
-        <div class="success">  ✓ Audit trail initialized</div>
-        <div class="success">  ✓ Core API on :3001</div>
-        <div class="dim"></div>
-        <div class="success">  ━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-        <div class="success">   Aria is live. Say hello!</div>
-        <div class="success">  ━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-        <div class="dim"></div>
-        <div><span class="prompt">You:</span> explain how DNS works</div>
-        <div class="dim"></div>
-        <div><span class="info">Aria:</span> DNS translates domain names to IP addresses. When you type a URL, your browser asks a recursive resolver...</div>
-        <div class="dim"></div>
-        <div><span class="prompt">You:</span> /audit</div>
-        <div class="info">  🔍 Audit Trail — 14 entries — 14 valid — 0 invalid</div>
-        <div class="dim">  Last: LLM_RESPONSE @ 14:32:01 ✓</div>
-      </div>
-    </div>
-  </section>
+<div class="mtr"><div class="m"><div class="mv">46</div><div class="ml">Tests</div></div><div class="m"><div class="mv">0</div><div class="ml">Errors</div></div><div class="m"><div class="mv">14</div><div class="ml">Skills</div></div><div class="m"><div class="mv">0</div><div class="ml">API Keys</div></div></div>
 
-  <!-- METRICS -->
-  <div class="metrics">
-    <div class="metric">
-      <div class="metric-value">46</div>
-      <div class="metric-label">Tests Passing</div>
-    </div>
-    <div class="metric">
-      <div class="metric-value">0</div>
-      <div class="metric-label">TypeScript Errors</div>
-    </div>
-    <div class="metric">
-      <div class="metric-value">14</div>
-      <div class="metric-label">Skills</div>
-    </div>
-    <div class="metric">
-      <div class="metric-value">0</div>
-      <div class="metric-label">API Keys Required</div>
-    </div>
-  </div>
+<div class="tm"><div class="tb"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="tt">nebula</span></div>
+<div class="tp">
+<div><span class="p">$</span> curl -fsSL wrap.dev/install | bash</div>
+<div class="s"> ✓ Node v22 · Deps installed · CLI ready</div>
+<div><span class="p">$</span> nebula init</div>
+<div class="o"> ? Backend: <span class="i">Ollama (free)</span> · Name: <span class="i">Aria</span></div>
+<div class="s"> ✓ Config saved</div>
+<div><span class="p">$</span> nebula start</div>
+<div class="s"> ✓ Ollama · Aria · Audit trail · API :3001</div>
+<div class="s"> Aria is live.</div>
+<div><span class="p">You:</span> how does DNS work</div>
+<div class="i">Aria: DNS translates domain names to IP addresses...</div>
+</div></div>
 
-  <!-- FEATURES -->
-  <section class="features" id="features">
-    <h2>Built different.</h2>
-    <p class="subtitle">Every component is designed for security-first operation.</p>
-    <div class="feature-grid">
-      <div class="feature">
-        <div class="feature-icon">🔒</div>
-        <h3>V8 Sandbox</h3>
-        <p>Code execution runs in an isolated environment. Temp directory, stripped environment variables, blocked dangerous patterns, output limits. Your code can't touch the host system.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">✍️</div>
-        <h3>Ed25519 Audit Trail</h3>
-        <p>Every action is cryptographically signed. Verify the entire history with <code>verifyAll()</code>. Immutable, append-only, tamper-evident.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🛡️</div>
-        <h3>Input Sanitizer</h3>
-        <p>Prompt injection, SQL injection, XSS — detected and blocked before reaching the LLM. PII (SSN, credit cards, emails) auto-redacted.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🏠</div>
-        <h3>100% Local</h3>
-        <p>Ollama runs on your machine. No data leaves your computer. No API keys needed. No cloud dependency. Free forever.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔌</div>
-        <h3>Multi-Provider</h3>
-        <p>Works with Ollama (local), Claude (Anthropic), and GPT-4 (OpenAI). Auto-detected from your config. Switch anytime.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">📦</div>
-        <h3>Plugin System</h3>
-        <p>Create, install, and share skills. Each skill is hash-verified before loading. <code>nebula skill create my-skill</code></p>
-      </div>
-    </div>
-  </section>
+<section class="sec" id="features">
+<h2>What it does.</h2>
+<p class="sub">Security-first. Every component independent.</p>
+<div class="fg">
+<div class="fe"><div class="ic">🔒</div><h3>V8 Sandbox</h3><p>Code runs isolated. Temp dir, stripped env, 128MB, 30s timeout.</p></div>
+<div class="fe"><div class="ic">✍️</div><h3>Ed25519 Audit</h3><p>Every action signed. Verify all with one call. Immutable log.</p></div>
+<div class="fe"><div class="ic">🛡️</div><h3>Sanitizer</h3><p>Injection, SQL, XSS blocked. PII auto-redacted.</p></div>
+<div class="fe"><div class="ic">🏠</div><h3>100% Local</h3><p>Ollama on your machine. No data leaves. Free.</p></div>
+<div class="fe"><div class="ic">🔌</div><h3>Multi-Provider</h3><p>Ollama, Claude, GPT-4. Auto-detected. Switch anytime.</p></div>
+<div class="fe"><div class="ic">📦</div><h3>Plugins</h3><p>Create, install, share. Hash-verified. <code>nebula skill</code></p></div>
+</div></section>
 
-  <!-- ARCHITECTURE -->
-  <section class="architecture" id="architecture">
-    <h2>How a message flows.</h2>
-    <div class="arch-flow">
-      <div class="arch-step active">
-        <span class="arch-step-num">01</span>
-        <span class="arch-step-name">User Input</span>
-        <span class="arch-step-desc">Telegram / CLI / VS Code</span>
-      </div>
-      <div class="arch-arrow">↓</div>
-      <div class="arch-step">
-        <span class="arch-step-num">02</span>
-        <span class="arch-step-name">Input Sanitizer</span>
-        <span class="arch-step-desc">Injection detection + PII redaction</span>
-      </div>
-      <div class="arch-arrow">↓</div>
-      <div class="arch-step blocked">
-        <span class="arch-step-num">03</span>
-        <span class="arch-step-name">Rust Governor</span>
-        <span class="arch-step-desc">Permission check + sandbox + audit sign</span>
-      </div>
-      <div class="arch-arrow">↓</div>
-      <div class="arch-step">
-        <span class="arch-step-num">04</span>
-        <span class="arch-step-name">SOUL.md Loader</span>
-        <span class="arch-step-desc">Agent personality + skills + rules</span>
-      </div>
-      <div class="arch-arrow">↓</div>
-      <div class="arch-step">
-        <span class="arch-step-num">05</span>
-        <span class="arch-step-name">LLM Provider</span>
-        <span class="arch-step-desc">Ollama / Claude / GPT-4</span>
-      </div>
-      <div class="arch-arrow">↓</div>
-      <div class="arch-step">
-        <span class="arch-step-num">06</span>
-        <span class="arch-step-name">Skill Executor</span>
-        <span class="arch-step-desc">14 skills in sandboxed environment</span>
-      </div>
-      <div class="arch-arrow">↓</div>
-      <div class="arch-step">
-        <span class="arch-step-num">07</span>
-        <span class="arch-step-name">SQLite Memory</span>
-        <span class="arch-step-desc">Persistent conversation context</span>
-      </div>
-      <div class="arch-arrow">↓</div>
-      <div class="arch-step active">
-        <span class="arch-step-num">08</span>
-        <span class="arch-step-name">Response</span>
-        <span class="arch-step-desc">Signed, audited, delivered</span>
-      </div>
-    </div>
-  </section>
+<section class="sec" id="architecture">
+<h2>Message pipeline.</h2>
+<div class="fl">
+<div class="fs a"><span class="fn">01</span><span class="fm">Input</span><span class="fd">Telegram / CLI / VS Code</span></div><div class="fa">↓</div>
+<div class="fs"><span class="fn">02</span><span class="fm">Sanitizer</span><span class="fd">Injection + PII</span></div><div class="fa">↓</div>
+<div class="fs b"><span class="fn">03</span><span class="fm">Governor</span><span class="fd">Permissions + sandbox + audit</span></div><div class="fa">↓</div>
+<div class="fs"><span class="fn">04</span><span class="fm">SOUL.md</span><span class="fd">Personality + skills</span></div><div class="fa">↓</div>
+<div class="fs"><span class="fn">05</span><span class="fm">LLM</span><span class="fd">Ollama / Claude / GPT</span></div><div class="fa">↓</div>
+<div class="fs"><span class="fn">06</span><span class="fm">Skills</span><span class="fd">14 sandboxed</span></div><div class="fa">↓</div>
+<div class="fs"><span class="fn">07</span><span class="fm">Memory</span><span class="fd">SQLite — local</span></div><div class="fa">↓</div>
+<div class="fs a"><span class="fn">08</span><span class="fm">Response</span><span class="fd">Signed · audited</span></div>
+</div></section>
 
-  <!-- COMPARISON -->
-  <section class="comparison" id="comparison">
-    <h2>The real comparison.</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Capability</th>
-          <th>Kilo Code</th>
-          <th>Cline</th>
-          <th>Cursor</th>
-          <th class="highlight">WRAP NEBULA</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Open source</td>
-          <td class="yes">✓ Apache 2.0</td>
-          <td class="yes">✓</td>
-          <td class="no">✗</td>
-          <td class="yes highlight">✓ MIT</td>
-        </tr>
-        <tr>
-          <td>Sandbox execution</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="yes highlight">✓ V8 isolate</td>
-        </tr>
-        <tr>
-          <td>Signed audit trail</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="yes highlight">✓ Ed25519</td>
-        </tr>
-        <tr>
-          <td>PII auto-redaction</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="yes highlight">✓ Automatic</td>
-        </tr>
-        <tr>
-          <td>Local-first (Ollama)</td>
-          <td class="yes">✓</td>
-          <td class="yes">✓</td>
-          <td class="no">✗</td>
-          <td class="yes highlight">✓ Default</td>
-        </tr>
-        <tr>
-          <td>Zero API keys required</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="yes highlight">✓ Ollama</td>
-        </tr>
-        <tr>
-          <td>Telegram integration</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="yes highlight">✓ Built-in</td>
-        </tr>
-        <tr>
-          <td>VS Code extension</td>
-          <td class="yes">✓</td>
-          <td class="yes">✓</td>
-          <td class="yes">✓</td>
-          <td class="partial highlight">✓ v0.9</td>
-        </tr>
-        <tr>
-          <td>Predictable cost</td>
-          <td class="no">✗</td>
-          <td class="no">✗</td>
-          <td class="yes">✓</td>
-          <td class="yes highlight">✓ Free (local)</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
+<section class="sec" id="compare">
+<h2>Comparison.</h2>
+<table class="cmp"><thead><tr><th></th><th>Kilo</th><th>Cline</th><th>Cursor</th><th class="h">WRAP</th></tr></thead><tbody>
+<tr><td>Sandbox</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">V8</td></tr>
+<tr><td>Audit</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Ed25519</td></tr>
+<tr><td>PII</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Auto</td></tr>
+<tr><td>Local</td><td class="y">✓</td><td class="y">✓</td><td class="n">✗</td><td class="y h">Default</td></tr>
+<tr><td>Free</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Yes</td></tr>
+<tr><td>Telegram</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Built-in</td></tr>
+</tbody></table></section>
 
-  <!-- CODE -->
-  <section class="code-section" id="code">
-    <h2>How it works.</h2>
-    <p class="subtitle">Real code. Not pseudocode. Not promises.</p>
+<section class="sec" id="code">
+<h2>Code.</h2>
+<div class="cb"><div class="ch"><span>code.run — sandbox</span><span>V8 isolate</span></div>
+<pre><span class="cm">// Temp dir · stripped env · 128MB · 30s</span>
+<span class="kw">const</span> proc = <span class="fn">spawn</span>(cmd, args, {
+  <span class="fn">cwd</span>: <span class="fn">path.join</span>(sandbox, <span class="st">'workspace'</span>),
+  <span class="fn">env</span>: { <span class="fn">PATH</span>: <span class="st">'/usr/bin:/bin'</span>, <span class="fn">HOME</span>: sandbox },
+  <span class="fn">timeout</span>: <span class="nu">30000</span>,
+});</pre></div>
+<div class="cb"><div class="ch"><span>audit/trail.ts — signing</span><span>Ed25519</span></div>
+<pre><span class="kw">const</span> { privateKey } = crypto.<span class="fn">generateKeyPairSync</span>(<span class="st">'ed25519'</span>);
+<span class="fn">log</span>(action, input, output) {
+  <span class="kw">const</span> sig = crypto.<span class="fn">sign</span>(<span class="kw">null</span>, <span class="fn">Buffer.from</span>(hash), privateKey);
+  fs.<span class="fn">appendFileSync</span>(logPath, <span class="fn">JSON.stringify</span>(entry));
+}</pre></div>
+</section>
 
-    <div class="code-block">
-      <div class="code-block-header">
-        <span>packages/core/src/skills/definitions/code.run.ts</span>
-        <span>Sandboxed execution</span>
-      </div>
-      <pre><span class="comment">// Code runs in a temp directory</span>
-<span class="comment">// HOME is redirected, env is stripped</span>
-<span class="comment">// Dangerous patterns detected before execution</span>
+<section class="sec">
+<h2>Security.</h2>
+<p class="sub">Independent layers. Compromising one doesn't compromise the others.</p>
+<div class="sl">
+<div class="sll"><div class="sln">01</div><div class="slc"><strong>Input Sanitizer</strong><span>Injection (10), SQL (6), XSS (5). PII redacted.</span></div></div>
+<div class="sll"><div class="sln">02</div><div class="slc"><strong>Rust Governor</strong><span>Separate process. Binary-level audit signing.</span></div></div>
+<div class="sll"><div class="sln">03</div><div class="slc"><strong>V8 Sandbox</strong><span>Temp dir. No network. 128MB. 30s timeout.</span></div></div>
+<div class="sll"><div class="sln">04</div><div class="slc"><strong>Ed25519 Trail</strong><span>Append-only. Hash-chained. One function to verify.</span></div></div>
+<div class="sll"><div class="sln">05</div><div class="slc"><strong>SQLite Memory</strong><span>Local only. Never transmitted.</span></div></div>
+</div></section>
 
-<span class="kw">const</span> proc = <span class="fn">spawn</span>(command, args, {
-  <span class="fn">cwd</span>: <span class="fn">path.join</span>(sandboxPath, <span class="str">'workspace'</span>),
-  <span class="fn">env</span>: {
-    <span class="fn">PATH</span>: <span class="str">'/usr/bin:/bin'</span>,
-    <span class="fn">HOME</span>: sandboxPath,
-    <span class="fn">NODE_OPTIONS</span>: <span class="str">'--max-old-space-size=128'</span>,
-  },
-  <span class="fn">timeout</span>: <span class="num">30000</span>,
-});</pre>
-    </div>
+<section class="sec">
+<h2>Roadmap.</h2>
+<div class="fl">
+<div class="ri d"><span class="rv">v8</span><div class="rd"><h4>Core Agent</h4><p>Ollama, Claude, GPT. Sandbox, audit, CLI.</p></div><span class="rs d">Shipped</span></div>
+<div class="ri d"><span class="rv">v9</span><div class="rd"><h4>VS Code</h4><p>Chat, right-click, audit tree. .vsix</p></div><span class="rs d">Shipped</span></div>
+<div class="ri d"><span class="rv">v10</span><div class="rd"><h4>Plugins</h4><p>Manifest, loader, registry. Verified.</p></div><span class="rs d">Shipped</span></div>
+<div class="ri d"><span class="rv">v11</span><div class="rd"><h4>Multi-Agent</h4><p>Signed bus, delegation, registry.</p></div><span class="rs d">Shipped</span></div>
+<div class="ri c"><span class="rv">v12</span><div class="rd"><h4>Marketplace</h4><p>VS Code listing. Community.</p></div><span class="rs c">Active</span></div>
+<div class="ri f"><span class="rv">v13</span><div class="rd"><h4>Enterprise</h4><p>SSO. Teams. Compliance.</p></div><span class="rs f">Planned</span></div>
+</div></section>
 
-    <div class="code-block">
-      <div class="code-block-header">
-        <span>packages/core/src/audit/trail.ts</span>
-        <span>Ed25519 signing</span>
-      </div>
-      <pre><span class="comment">// Every action is signed with Ed25519</span>
-<span class="kw">const</span> { privateKey, publicKey } = crypto.<span class="fn">generateKeyPairSync</span>(<span class="str">'ed25519'</span>);
+<section class="sec" id="install">
+<h2>Install.</h2>
+<div class="tm"><div class="tb"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="tt">install</span></div>
+<div class="tp">
+<div class="cm"># Install</div>
+<div><span class="p">$</span> curl -fsSL raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash</div>
+<div class="cm"># Configure</div>
+<div><span class="p">$</span> nebula init</div>
+<div class="cm"># Start (Ollama must be running)</div>
+<div><span class="p">$</span> ollama serve &amp; ollama pull llama3 &amp;&amp; nebula start</div>
+</div></div></section>
 
-<span class="fn">log</span>(action: <span class="kw">string</span>, input: <span class="kw">string</span>, output: <span class="kw">string</span>) {
-  <span class="kw">const</span> entryHash = <span class="fn">this.hash</span>(entryData);
-  <span class="kw">const</span> signature = crypto.<span class="fn">sign</span>(<span class="kw">null</span>, <span class="fn">Buffer.from</span>(entryHash), privateKey);
-  fs.<span class="fn">appendFileSync</span>(<span class="fn">this.logPath</span>, <span class="fn">JSON.stringify</span>(entry) + <span class="str">'\n'</span>);
-}</pre>
-    </div>
-  </section>
-
-  <!-- INSTALL -->
-  <section class="terminal-section" id="install">
-    <h2 style="text-align:center; margin-bottom: 32px; font-size: 32px;">Get started.</h2>
-    <div class="terminal">
-      <div class="terminal-bar">
-        <div class="terminal-dot red"></div>
-        <div class="terminal-dot yellow"></div>
-        <div class="terminal-dot green"></div>
-        <span class="terminal-title">install</span>
-      </div>
-      <div class="terminal-body">
-        <div class="comment"># Install</div>
-        <div><span class="prompt">$</span> curl -fsSL https://raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash</div>
-        <div class="dim"></div>
-        <div class="comment"># Configure</div>
-        <div><span class="prompt">$</span> nebula init</div>
-        <div class="dim"></div>
-        <div class="comment"># Start (requires Ollama running)</div>
-        <div><span class="prompt">$</span> ollama serve &amp;</div>
-        <div><span class="prompt">$</span> ollama pull llama3</div>
-        <div><span class="prompt">$</span> nebula start</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-links">
-      <a href="https://github.com/Vitalcheffe/Wrap">GitHub</a>
-      <a href="https://github.com/Vitalcheffe/Wrap/issues">Issues</a>
-      <a href="https://github.com/Vitalcheffe/Wrap/blob/main/CONTRIBUTING.md">Contributing</a>
-    </div>
-    <p>WRAP NEBULA v8.0 — Built by <a href="https://github.com/Vitalcheffe">VitalCheffe</a> — 16, Casablanca 🇲🇦</p>
-    <p style="margin-top: 8px; font-size: 11px;">MIT License · <a href="https://github.com/Vitalcheffe/Wrap/blob/main/LICENSE">View license</a></p>
-  </footer>
-
-  <!-- LIVE DASHBOARD -->
-  <section class="dashboard" id="dashboard">
-    <h2>Live system status.</h2>
-    <p class="subtitle">Real-time metrics from a running instance.</p>
-    <div class="dash-grid">
-      <div class="dash-panel">
-        <h3>Agent Status</h3>
-        <div class="dash-stat"><span class="dash-stat-label">Status</span><span class="dash-stat-value up">● Online</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Model</span><span class="dash-stat-value">llama3 (Ollama)</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Uptime</span><span class="dash-stat-value">2h 14m 38s</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Messages</span><span class="dash-stat-value">847</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Skills executed</span><span class="dash-stat-value">126</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Audit entries</span><span class="dash-stat-value">973</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Avg response</span><span class="dash-stat-value up">1.2s</span></div>
-      </div>
-      <div class="dash-panel">
-        <h3>Security</h3>
-        <div class="dash-stat"><span class="dash-stat-label">Injections blocked</span><span class="dash-stat-value down">3</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">PII redacted</span><span class="dash-stat-value">12 items</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Signatures valid</span><span class="dash-stat-value up">973/973</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Sandbox violations</span><span class="dash-stat-value up">0</span></div>
-        <div class="dash-stat"><span class="dash-stat-label">Dangerous blocked</span><span class="dash-stat-value down">7</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECURITY DEEP DIVE -->
-  <section class="security" id="security">
-    <h2>Security architecture.</h2>
-    <p class="subtitle">Every layer is independent. Compromising one doesn't compromise the others.</p>
-    <div class="sec-layers">
-      <div class="sec-layer"><div class="sec-layer-num">01</div><div class="sec-layer-content"><div class="sec-layer-name">Input Sanitizer</div><div class="sec-layer-desc">Prompt injection (10 patterns), SQL injection (6), XSS (5). PII redacted automatically.</div></div></div>
-      <div class="sec-layer"><div class="sec-layer-num">02</div><div class="sec-layer-content"><div class="sec-layer-name">Rust Governor</div><div class="sec-layer-desc">Separate process. Validates permissions, filters injections, signs audit entries at binary level.</div></div></div>
-      <div class="sec-layer"><div class="sec-layer-num">03</div><div class="sec-layer-content"><div class="sec-layer-name">V8 Sandbox</div><div class="sec-layer-desc">Temp HOME, minimal PATH, no network, 128MB memory, 30s timeout. Dangerous patterns blocked.</div></div></div>
-      <div class="sec-layer"><div class="sec-layer-num">04</div><div class="sec-layer-content"><div class="sec-layer-name">Ed25519 Audit Trail</div><div class="sec-layer-desc">Append-only, hash-chained, cryptographically signed. Verify all with one function call.</div></div></div>
-      <div class="sec-layer"><div class="sec-layer-num">05</div><div class="sec-layer-content"><div class="sec-layer-name">SQLite Memory</div><div class="sec-layer-desc">Local only. Never transmitted. Never synced. Your data stays on your machine.</div></div></div>
-    </div>
-  </section>
-
-  <!-- ROADMAP -->
-  <section class="roadmap" id="roadmap">
-    <h2>Roadmap.</h2>
-    <div class="roadmap-items">
-      <div class="roadmap-item done"><div class="roadmap-version">v8</div><div class="roadmap-details"><h4>Core Agent</h4><p>Ollama, Claude, GPT-4. Sandbox, audit, Telegram, CLI.</p></div><span class="roadmap-status done">Shipped</span></div>
-      <div class="roadmap-item done"><div class="roadmap-version">v9</div><div class="roadmap-details"><h4>VS Code Extension</h4><p>Chat panel, right-click, audit tree. Packaged as .vsix.</p></div><span class="roadmap-status done">Shipped</span></div>
-      <div class="roadmap-item done"><div class="roadmap-version">v10</div><div class="roadmap-details"><h4>Plugin System</h4><p>Manifest, loader, registry, CLI. Hash-verified.</p></div><span class="roadmap-status done">Shipped</span></div>
-      <div class="roadmap-item done"><div class="roadmap-version">v11</div><div class="roadmap-details"><h4>Multi-Agent</h4><p>Signed message bus, task delegation, registry.</p></div><span class="roadmap-status done">Shipped</span></div>
-      <div class="roadmap-item current"><div class="roadmap-version">v12</div><div class="roadmap-details"><h4>Published Extension</h4><p>VS Code Marketplace. JetBrains. Community feedback.</p></div><span class="roadmap-status current">In Progress</span></div>
-      <div class="roadmap-item future"><div class="roadmap-version">v13</div><div class="roadmap-details"><h4>Skill Marketplace</h4><p>Public registry. One-click install. Community skills.</p></div><span class="roadmap-status future">Planned</span></div>
-    </div>
-  </section>
-
+<footer>
+<div class="flk"><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="https://github.com/Vitalcheffe/Wrap/issues">Issues</a><a href="https://github.com/Vitalcheffe/Wrap/blob/main/CONTRIBUTING.md">Contribute</a></div>
+WRAP NEBULA v8.0 · <a href="https://github.com/Vitalcheffe">VitalCheffe</a> · 16 · Casablanca · MIT
+</footer>
 </body>
 </html>
