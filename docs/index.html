@@ -5,214 +5,432 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WRAP NEBULA — Zero Trust AI Agent</title>
 <link rel="icon" href="media/logo-white.PNG">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#0A0F1E;--sf:#0F1629;--cd:#141B2D;--bd:#1E2A45;--bl:#3B82F6;--bl2:#2563EB;--ac:#60A5FA;--tx:#F1F5F9;--tx2:#94A3B8;--gn:#10B981;--pp:#8B5CF6;--f:'Inter',sans-serif;--m:'JetBrains Mono',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#000;--s:#0a0a0a;--s2:#111;--b:#1a1a1a;--t:#e4e4e7;--d:#71717a;--g:#22c55e;--r:#ef4444;--bl:#3b82f6;--f:'SF Mono','Cascadia Code',monospace;--sf:-apple-system,system-ui,sans-serif}
-html{scroll-behavior:smooth}body{background:var(--bg);color:var(--t);font-family:var(--sf);-webkit-font-smoothing:antialiased}
-::selection{background:var(--g);color:#000}a{color:inherit;text-decoration:none}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--tx);font-family:var(--f);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--bl);color:#fff}a{color:inherit;text-decoration:none}
+img{max-width:100%}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--b);padding:0 40px;height:52px;display:flex;align-items:center;justify-content:space-between}
-.nl{display:flex;align-items:center;gap:10px;font-family:var(--f);font-size:13px;font-weight:600;letter-spacing:1px}
-.nr{display:flex;gap:28px;align-items:center}
-.nr a{color:var(--d);font-size:11px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
-.nr a:hover{color:var(--t)}
-.nb{background:var(--g);color:#000;padding:6px 14px;border-radius:4px;font-size:11px;font-weight:600}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,30,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);height:64px;display:flex;align-items:center;padding:0 32px;justify-content:space-between}
+.nav-l{display:flex;align-items:center;gap:12px;height:32px}
+.nav-l img{height:32px}
+.nav-c{display:flex;gap:28px;align-items:center}
+.nav-c a{color:var(--tx2);font-size:13px;font-weight:500;transition:color .2s}
+.nav-c a:hover{color:var(--tx)}
+.nav-r{display:flex;gap:10px;align-items:center}
+.nav-r .gh{padding:7px 16px;border:1px solid var(--bd);border-radius:6px;font-size:13px;color:var(--tx2);transition:all .2s}
+.nav-r .gh:hover{border-color:var(--tx2);color:var(--tx)}
+.nav-r .ins{padding:7px 16px;background:var(--bl);border-radius:6px;font-size:13px;font-weight:600;color:#fff;transition:background .2s}
+.nav-r .ins:hover{background:var(--bl2)}
+.hamburger{display:none;background:none;border:none;color:var(--tx);font-size:24px;cursor:pointer}
 
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(34,197,94,.04) 0%,transparent 70%);pointer-events:none}
-.banner{max-width:600px;width:80%;margin-bottom:40px;opacity:.9}
-.ht{font-family:var(--f);font-size:10px;color:var(--d);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;display:flex;align-items:center;gap:8px}
-.ht .dot{width:5px;height:5px;border-radius:50%;background:var(--g);animation:p 2s infinite}
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 60px;position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(59,130,246,.06) 0%,transparent 60%);pointer-events:none}
+.hero-bg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;opacity:.03;pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid var(--bd);border-radius:100px;font-size:12px;color:var(--tx2);margin-bottom:32px;background:var(--sf)}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gn);animation:p 2s infinite}
 @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
-.hero h1{font-size:clamp(36px,6vw,72px);font-weight:800;line-height:1.05;letter-spacing:-3px;max-width:800px;margin-bottom:20px}
-.hero h1 span{color:var(--g)}
-.hero p{font-size:16px;color:var(--d);max-width:520px;line-height:1.8;margin-bottom:40px}
-.hb{display:flex;gap:12px}
-.btn{padding:12px 24px;border-radius:6px;font-size:14px;font-weight:600;transition:all .2s}
-.bp{background:var(--g);color:#000}.bp:hover{opacity:.9;transform:translateY(-1px)}
-.bs{background:var(--s2);color:var(--t);border:1px solid var(--b)}.bs:hover{border-color:var(--d)}
+.hero h1{font-size:clamp(40px,7vw,72px);font-weight:700;line-height:1.05;letter-spacing:-3px;margin-bottom:20px}
+.hero h1 span{background:linear-gradient(135deg,var(--bl),var(--pp));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:17px;color:var(--tx2);max-width:540px;line-height:1.7;margin-bottom:40px}
+.ctas{display:flex;gap:12px;margin-bottom:48px}
+.cta-p{padding:14px 28px;background:var(--bl);color:#fff;border-radius:8px;font-size:15px;font-weight:600;transition:all .2s}
+.cta-p:hover{background:var(--bl2);transform:translateY(-1px)}
+.cta-s{padding:14px 28px;border:1px solid var(--bd);border-radius:8px;font-size:15px;color:var(--tx2);transition:all .2s}
+.cta-s:hover{border-color:var(--tx2);color:var(--tx)}
+.stats{display:flex;gap:48px;flex-wrap:wrap;justify-content:center;margin-bottom:48px}
+.stat{text-align:center}
+.stat-n{font-family:var(--m);font-size:24px;font-weight:700;color:var(--bl)}
+.stat-l{font-size:12px;color:var(--tx2);margin-top:2px}
+.term{max-width:680px;width:100%;background:var(--cd);border:1px solid var(--bd);border-radius:12px;overflow:hidden;font-family:var(--m);font-size:13px;text-align:left}
+.term-bar{background:var(--sf);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
+.tdd{width:10px;height:10px;border-radius:50%}.tdd.r{background:#FF5F57}.tdd.y{background:#FEBC2E}.tdd.g{background:#28C840}
+.term-t{color:var(--tx2);font-size:11px;margin-left:10px;font-family:var(--f)}
+.term-b{padding:20px;line-height:2}
+.pk{color:var(--gn)}.po{color:var(--tx2)}.ps{color:var(--gn)}.pi{color:var(--ac)}.pd{color:#3A4556}
 
-.mtr{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:8px;overflow:hidden;max-width:800px;margin:0 auto 80px}
-.m{background:var(--s);padding:28px;text-align:center}
-.mv{font-family:var(--f);font-size:28px;font-weight:700;color:var(--g)}
-.ml{font-size:10px;color:var(--d);margin-top:4px;text-transform:uppercase;letter-spacing:1.5px}
+/* SECTIONS */
+.sec{max-width:1100px;margin:0 auto;padding:100px 24px}
+.sec h2{font-size:36px;font-weight:700;margin-bottom:12px;letter-spacing:-1px}
+.sec .sub{color:var(--tx2);font-size:16px;margin-bottom:56px;max-width:600px}
 
-.tm{max-width:820px;margin:0 auto 80px;background:var(--s);border:1px solid var(--b);border-radius:8px;overflow:hidden;font-family:var(--f);font-size:12px}
-.tb{background:var(--s2);padding:8px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--b)}
-.td{width:9px;height:9px;border-radius:50%}.td.r{background:#ff5f57}.td.y{background:#febc2e}.td.g{background:#28c840}
-.tt{color:var(--d);font-size:11px;margin-left:10px}
-.tp{padding:16px;line-height:1.9}
-.p{color:var(--g)}.o{color:var(--d)}.s{color:var(--g)}.e{color:var(--r)}.i{color:var(--bl)}.dm{color:#3f3f46}
+/* FEATURES */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fc{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:28px;transition:border-color .2s}
+.fc:hover{border-color:var(--bl)}
+.fc .ic{font-size:28px;margin-bottom:16px}
+.fc h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.fc p{font-size:14px;color:var(--tx2);line-height:1.6}
+.fc code{background:var(--sf);padding:2px 6px;border-radius:4px;font-family:var(--m);font-size:12px;color:var(--ac)}
 
-.sec{max-width:1000px;margin:0 auto;padding:80px 24px}
-.sec h2{font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-1px}
-.sec .sub{color:var(--d);font-size:14px;margin-bottom:48px}
+/* DASHBOARD MOCKUP */
+.dash{background:var(--sf);border:1px solid var(--bd);border-radius:16px;overflow:hidden;display:flex;min-height:500px}
+.dash-side{width:220px;background:var(--cd);border-right:1px solid var(--bd);padding:20px;display:flex;flex-direction:column}
+.dash-logo{margin-bottom:32px}
+.dash-logo img{height:28px}
+.dash-nav{flex:1}
+.dash-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;color:var(--tx2);cursor:pointer;margin-bottom:2px;transition:all .15s}
+.dash-nav-item.active{background:rgba(59,130,246,.15);color:var(--bl)}
+.dash-nav-item:hover{color:var(--tx)}
+.dash-user{border-top:1px solid var(--bd);padding-top:16px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--tx2)}
+.dash-avatar{width:32px;height:32px;border-radius:50%;background:var(--bl);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff}
+.dash-main{flex:1;padding:24px;overflow-y:auto}
+.dash-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.dash-top h3{font-size:20px;font-weight:700}
+.dash-new{padding:8px 16px;background:var(--bl);border-radius:6px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:background .15s}
+.dash-new:hover{background:var(--bl2)}
+.agents{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+.agent{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:20px;transition:border-color .2s}
+.agent:hover{border-color:var(--bl)}
+.agent-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.agent-name{font-weight:600;font-size:15px}
+.agent-status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gn)}
+.agent-status .dot{width:6px;height:6px;border-radius:50%;background:var(--gn)}
+.agent-status.idle{color:#F59E0B}
+.agent-status.idle .dot{background:#F59E0B}
+.agent-model{font-size:12px;color:var(--tx2);margin-bottom:4px}
+.agent-skills{font-size:12px;color:var(--tx2);margin-bottom:12px}
+.agent-meta{font-size:11px;color:var(--tx2);display:flex;gap:16px}
+.agent-btns{display:flex;gap:8px;margin-top:12px}
+.agent-btns button{padding:4px 12px;border-radius:4px;font-size:11px;background:var(--sf);color:var(--tx2);border:1px solid var(--bd);cursor:pointer;transition:all .15s}
+.agent-btns button:hover{border-color:var(--tx2);color:var(--tx)}
+.agent-add{border:2px dashed var(--bd);border-radius:10px;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--bl);cursor:pointer;transition:all .2s;min-height:180px}
+.agent-add:hover{border-color:var(--bl);background:rgba(59,130,246,.05)}
+.agent-add .plus{font-size:32px;margin-bottom:8px}
+.agent-add span{font-size:13px}
+.activity{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:20px}
+.activity h4{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.activity h4 .live{width:6px;height:6px;border-radius:50%;background:var(--gn);animation:p 2s infinite}
+.act-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.act-row:last-child{border:none}
+.act-row .agent-tag{background:var(--sf);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;color:var(--ac);min-width:60px}
+.act-row .time{color:var(--tx2);font-size:11px;margin-left:auto;min-width:60px;text-align:right}
+.act-row .action{color:var(--tx2);flex:1}
 
-.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:8px;overflow:hidden}
-.fe{background:var(--s);padding:28px}.fe .ic{font-size:20px;margin-bottom:12px}
-.fe h3{font-size:14px;font-weight:600;margin-bottom:6px}
-.fe p{font-size:13px;color:var(--d);line-height:1.6}
-.fe code{background:var(--s2);padding:1px 5px;border-radius:3px;font-family:var(--f);font-size:11px;color:var(--g)}
+/* ARCHITECTURE */
+.arch{display:flex;flex-direction:column;gap:0}
+.arch-s{display:flex;align-items:center;padding:16px 20px;background:var(--cd);border-left:3px solid var(--bd)}
+.arch-s.a{border-left-color:var(--bl)}.arch-s.b{border-left-color:var(--pp)}
+.arch-n{font-family:var(--m);font-size:11px;color:var(--tx2);min-width:32px}
+.arch-m{font-weight:600;font-size:14px}
+.arch-d{font-size:12px;color:var(--tx2);margin-left:auto}
+.arch-a{padding:4px 20px;color:var(--bd);font-size:10px;border-left:3px solid var(--bd)}
 
-.fl{display:flex;flex-direction:column}
-.fs{display:flex;align-items:center;padding:14px 18px;background:var(--s);border-left:2px solid var(--b)}
-.fs.a{border-left-color:var(--g)}.fs.b{border-left-color:var(--r)}
-.fn{font-family:var(--f);font-size:11px;color:var(--d);min-width:28px}
-.fm{font-weight:600;font-size:13px}
-.fd{font-size:12px;color:var(--d);margin-left:auto}
-.fa{padding:4px 18px;color:#27272a;font-size:10px;border-left:2px solid var(--b)}
+/* COMPARISON */
+.cmp-t{width:100%;border-collapse:collapse;font-size:14px}
+.cmp-t th,.cmp-t td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--bd)}
+.cmp-t th{color:var(--tx2);font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.cmp-t .yy{color:var(--gn)}.cmp-t .nn{color:#EF4444}.cmp-t .hh{color:var(--bl);font-weight:600}
 
-.cmp{width:100%;border-collapse:collapse;font-size:13px}
-.cmp th,.cmp td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--b)}
-.cmp th{color:var(--d);font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
-.yy{color:var(--g)}.nn{color:var(--r)}.hh{color:var(--g);font-weight:600}
+/* CODE TABS */
+.tabs{display:flex;gap:0;margin-bottom:0}
+.tab{padding:10px 20px;background:var(--cd);border:1px solid var(--bd);border-bottom:none;font-size:12px;color:var(--tx2);cursor:pointer;font-family:var(--f);border-radius:8px 8px 0 0;margin-right:-1px;transition:all .15s}
+.tab.active{background:var(--sf);color:var(--tx);border-bottom:1px solid var(--sf)}
+.cblock{background:var(--sf);border:1px solid var(--bd);border-radius:0 8px 8px 8px;padding:20px;overflow-x:auto;font-family:var(--m);font-size:13px;line-height:1.7}
+.kw{color:#C678DD}.fn{color:#61AFEF}.st{color:#98C379}.cm{color:#5C6370;font-style:italic}.nu{color:#D19A66}
 
-.cb{background:var(--s);border:1px solid var(--b);border-radius:8px;overflow:hidden;margin-bottom:20px}
-.ch{background:var(--s2);padding:8px 14px;font-family:var(--f);font-size:11px;color:var(--d);border-bottom:1px solid var(--b);display:flex;justify-content:space-between}
-.cb pre{padding:16px;overflow-x:auto;font-family:var(--f);font-size:12px;line-height:1.7}
-.kw{color:#c678dd}.fnn{color:#61afef}.st{color:#98c379}.cm{color:#5c6370;font-style:italic}.nu{color:#d19a66}
+/* ROADMAP */
+.rmap{display:flex;gap:0;align-items:stretch;overflow-x:auto}
+.rm{flex:1;padding:20px;background:var(--cd);border:1px solid var(--bd);text-align:center;min-width:140px;position:relative}
+.rm.done{border-top:3px solid var(--gn)}.rm.active{border-top:3px solid var(--bl)}.rm.future{border-top:3px solid var(--bd);opacity:.6}
+.rm-v{font-family:var(--m);font-size:16px;font-weight:700;margin-bottom:4px}
+.rm-n{font-size:13px;margin-bottom:8px}
+.rm-s{font-size:10px;padding:2px 10px;border-radius:100px;display:inline-block}
+.rm-s.d{background:rgba(16,185,129,.15);color:var(--gn)}.rm-s.a{background:rgba(59,130,246,.15);color:var(--bl)}.rm-s.f{background:var(--sf);color:var(--tx2)}
 
-.sl{display:flex;flex-direction:column}
-.sll{display:flex;background:var(--s);border:1px solid var(--b);border-bottom:none}
-.sll:first-child{border-radius:8px 8px 0 0}.sll:last-child{border-radius:0 0 8px 8px;border-bottom:1px solid var(--b)}
-.sln{display:flex;align-items:center;justify-content:center;width:44px;background:var(--s2);border-right:1px solid var(--b);font-family:var(--f);font-size:11px;color:var(--d)}
-.slc{padding:16px 20px;flex:1}.slc strong{font-size:13px;display:block;margin-bottom:2px}.slc span{font-size:12px;color:var(--d)}
+/* INSTALL */
+.inst{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:24px;font-family:var(--m);font-size:13px}
+.inst .line{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)}
+.inst .line:last-child{border:none}
+.inst .cmd{color:var(--ac)}
+.inst .copy{background:var(--sf);border:1px solid var(--bd);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--tx2);cursor:pointer;font-family:var(--f);transition:all .15s}
+.inst .copy:hover{border-color:var(--tx2);color:var(--tx)}
 
-.ri{display:flex;gap:14px;padding:16px 18px;background:var(--s);border-left:2px solid var(--b)}
-.ri.d{border-left-color:var(--g)}.ri.c{border-left-color:var(--bl)}.ri.f{border-left-color:var(--b);opacity:.6}
-.rv{font-family:var(--f);font-size:13px;font-weight:600;min-width:40px}
-.rd h4{font-size:14px;margin-bottom:2px}.rd p{font-size:12px;color:var(--d)}
-.rss{margin-left:auto;font-size:10px;padding:2px 10px;border-radius:100px;align-self:center}
-.rss.d{background:rgba(34,197,94,.12);color:var(--g)}.rss.c{background:rgba(59,130,246,.12);color:var(--bl)}.rss.f{background:var(--s2);color:var(--d)}
+/* FOOTER */
+footer{border-top:1px solid var(--bd);padding:48px 24px;text-align:center}
+footer .fl{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:16px}
+footer .fl img{height:24px}
+footer .fl span{font-size:14px;color:var(--tx2)}
+footer .lk{display:flex;gap:24px;justify-content:center;margin-bottom:12px}
+footer .lk a{color:var(--tx2);font-size:13px;transition:color .15s}
+footer .lk a:hover{color:var(--tx)}
+footer .cp{font-size:12px;color:var(--tx2)}
+footer .cp a{color:var(--ac)}
 
-footer{border-top:1px solid var(--b);padding:40px 24px;text-align:center;font-size:12px;color:var(--d)}
-footer a{color:var(--g)}
-.flk{display:flex;gap:20px;justify-content:center;margin-bottom:12px}
-
-@media(max-width:768px){nav{padding:0 16px}.nr{display:none}.hero h1{font-size:28px;letter-spacing:-1px}.mtr{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}.banner{width:90%}}
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:0 16px}.nav-c,.nav-r{display:none}.hamburger{display:block}
+  .hero h1{font-size:32px;letter-spacing:-1px}
+  .stats{gap:24px}
+  .fg{grid-template-columns:1fr}
+  .dash{flex-direction:column}.dash-side{width:100%;flex-direction:row;padding:12px;overflow-x:auto}
+  .agents{grid-template-columns:1fr}
+  .rmap{flex-direction:column}
+  .arch-s{flex-wrap:wrap}.arch-d{margin-left:0;margin-top:4px;width:100%}
+}
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-<div class="nl"><span style="color:var(--g)">◆</span> WRAP NEBULA</div>
-<div class="nr"><a href="#features">Features</a><a href="#architecture">Architecture</a><a href="#compare">Compare</a><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="#install" class="nb">Install</a></div>
+<div class="nav-l"><img src="media/logo-white.PNG" alt="WRAP NEBULA"></div>
+<div class="nav-c">
+<a href="#features">Features</a>
+<a href="#architecture">Architecture</a>
+<a href="#compare">Compare</a>
+<a href="#dashboard">Dashboard</a>
+<a href="#install">Install</a>
+</div>
+<div class="nav-r">
+<a href="https://github.com/Vitalcheffe/Wrap" class="gh">GitHub</a>
+<a href="#install" class="ins">Install</a>
+</div>
+<button class="hamburger" onclick="document.querySelector('.nav-c').style.display=document.querySelector('.nav-c').style.display==='flex'?'none':'flex'">☰</button>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
-<img src="media/banner-white.PNG" alt="WRAP NEBULA" class="banner">
-<div class="ht"><span class="dot"></span> v8.0 · local-first · zero-trust</div>
+<img src="media/banner-white.PNG" alt="" class="hero-bg">
+<div class="badge"><span class="dot"></span> v8.0 · Zero Trust · MIT License</div>
 <h1>The AI agent<br>you can <span>verify</span>.</h1>
-<p>No cloud. No trust. Every action sandboxed, signed, auditable. Runs on your machine with Ollama. Free.</p>
-<div class="hb"><a href="#install" class="btn bp">curl | bash →</a><a href="https://github.com/Vitalcheffe/Wrap" class="btn bs">Source</a></div>
+<p>No cloud. No trust required. Every action sandboxed, signed, and auditable. Runs on your machine with Ollama. Free forever.</p>
+<div class="ctas">
+<a href="#install" class="cta-p">curl | bash →</a>
+<a href="https://github.com/Vitalcheffe/Wrap" class="cta-s">View on GitHub</a>
+</div>
+<div class="stats">
+<div class="stat"><div class="stat-n">46</div><div class="stat-l">Tests</div></div>
+<div class="stat"><div class="stat-n">0</div><div class="stat-l">Errors</div></div>
+<div class="stat"><div class="stat-n">14</div><div class="stat-l">Skills</div></div>
+<div class="stat"><div class="stat-n">0</div><div class="stat-l">API Keys</div></div>
+</div>
+<div class="term">
+<div class="term-bar"><div class="tdd r"></div><div class="tdd y"></div><div class="tdd g"></div><span class="term-t">nebula</span></div>
+<div class="term-b">
+<div><span class="pk">$</span> nebula start</div>
+<div class="ps"> ✓ Ollama connected · llama3</div>
+<div class="ps"> ✓ Aria is live · Port 3001</div>
+<div class="ps"> ✓ Audit trail active · Ed25519</div>
+<div class="pd"> ──────────────────</div>
+<div><span class="pk">You:</span> how does DNS work</div>
+<div class="pi"> Aria: DNS translates domain names to IP addresses...</div>
+</div>
+</div>
 </section>
 
-<div class="mtr"><div class="m"><div class="mv">46</div><div class="ml">Tests</div></div><div class="m"><div class="mv">0</div><div class="ml">Errors</div></div><div class="m"><div class="mv">14</div><div class="ml">Skills</div></div><div class="m"><div class="mv">0</div><div class="ml">API Keys</div></div></div>
-
-<div class="tm"><div class="tb"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="tt">nebula</span></div>
-<div class="tp">
-<div><span class="p">$</span> curl -fsSL wrap.dev/install | bash</div>
-<div class="s"> ✓ Node v22 · Deps installed · CLI ready</div>
-<div><span class="p">$</span> nebula init</div>
-<div class="o"> ? Backend: <span class="i">Ollama (free)</span> · Name: <span class="i">Aria</span></div>
-<div class="s"> ✓ Config saved</div>
-<div><span class="p">$</span> nebula start</div>
-<div class="s"> ✓ Ollama · Aria · Audit trail · API :3001</div>
-<div class="s"> Aria is live.</div>
-<div><span class="p">You:</span> how does DNS work</div>
-<div class="i">Aria: DNS translates domain names to IP addresses...</div>
-</div></div>
-
+<!-- FEATURES -->
 <section class="sec" id="features">
-<h2>What it does.</h2>
-<p class="sub">Security-first. Every component independent.</p>
+<h2>Built different.</h2>
+<p class="sub">Every component is designed for security-first operation. Independent layers. Compromising one doesn't compromise the others.</p>
 <div class="fg">
-<div class="fe"><div class="ic">🔒</div><h3>V8 Sandbox</h3><p>Code runs isolated. Temp dir, stripped env, 128MB, 30s timeout.</p></div>
-<div class="fe"><div class="ic">✍️</div><h3>Ed25519 Audit</h3><p>Every action signed. Verify all with one call. Immutable log.</p></div>
-<div class="fe"><div class="ic">🛡️</div><h3>Sanitizer</h3><p>Injection, SQL, XSS blocked. PII auto-redacted.</p></div>
-<div class="fe"><div class="ic">🏠</div><h3>100% Local</h3><p>Ollama on your machine. No data leaves. Free.</p></div>
-<div class="fe"><div class="ic">🔌</div><h3>Multi-Provider</h3><p>Ollama, Claude, GPT-4. Auto-detected. Switch anytime.</p></div>
-<div class="fe"><div class="ic">📦</div><h3>Plugins</h3><p>Create, install, share. Hash-verified. <code>nebula skill</code></p></div>
-</div></section>
+<div class="fc"><div class="ic">🔒</div><h3>V8 Sandbox</h3><p>Code runs in an isolated environment. Temp directory, stripped environment variables, 128MB memory limit, 30-second timeout. Your code can't touch the host system.</p></div>
+<div class="fc"><div class="ic">✍️</div><h3>Ed25519 Audit</h3><p>Every action is cryptographically signed and appended to an immutable log. Hash-chained. Verify the entire history with one function call.</p></div>
+<div class="fc"><div class="ic">🛡️</div><h3>Input Sanitizer</h3><p>Prompt injection (10 patterns), SQL injection (6), XSS (5). PII like SSN, credit cards, and emails are automatically redacted.</p></div>
+<div class="fc"><div class="ic">🏠</div><h3>100% Local</h3><p>Ollama runs on your machine. No data leaves your computer. No API keys needed. No cloud dependency. Free forever.</p></div>
+<div class="fc"><div class="ic">🔌</div><h3>Multi-Provider</h3><p>Works with Ollama (local), Claude (Anthropic), and GPT-4 (OpenAI). Auto-detected from config. Switch anytime.</p></div>
+<div class="fc"><div class="ic">📦</div><h3>Plugin System</h3><p>Create, install, and share skills. Each skill is hash-verified before loading. <code>nebula skill create my-skill</code></p></div>
+<div class="fc"><div class="ic">🧠</div><h3>SQLite Memory</h3><p>Conversations stored locally in SQLite. Never transmitted. Never synced. Your data stays on your machine. Period.</p></div>
+<div class="fc"><div class="ic">⚡</div><h3>Zero Config</h3><p>SOUL.md — your agent personality in simple markdown. No YAML schemas. No JSON configs. Just markdown.</p></div>
+<div class="fc"><div class="ic">🤖</div><h3>Sub-Agents</h3><p>Ed25519-signed message bus. Task delegation based on skills. Each agent has its own identity and context.</p></div>
+</div>
+</section>
 
+<!-- DASHBOARD -->
+<section class="sec" id="dashboard">
+<h2>Full control. No terminal required.</h2>
+<p class="sub">Visual interface to manage agents, monitor activity, create sub-agents.</p>
+<div class="dash">
+<div class="dash-side">
+<div class="dash-logo"><img src="media/logo-white.PNG" alt="WRAP"></div>
+<div class="dash-nav">
+<div class="dash-nav-item active">● Agents</div>
+<div class="dash-nav-item">○ Skills</div>
+<div class="dash-nav-item">○ Audit Log</div>
+<div class="dash-nav-item">○ Settings</div>
+</div>
+<div class="dash-user">
+<div class="dash-avatar">V</div>
+<div><div style="font-weight:500;color:var(--tx)">VitalCheffe</div><div style="font-size:11px">v8.0 · Online</div></div>
+</div>
+</div>
+<div class="dash-main">
+<div class="dash-top">
+<h3>Agents</h3>
+<button class="dash-new">+ New Agent</button>
+</div>
+<div class="agents">
+<div class="agent">
+<div class="agent-top"><span class="agent-name">Aria</span><span class="agent-status"><span class="dot"></span> Online</span></div>
+<div class="agent-model">Model: Ollama llama3</div>
+<div class="agent-skills">Skills: web.search · files.read · code.run · reminder.set</div>
+<div class="agent-meta"><span>42 messages today</span><span>Last: 2 min ago</span></div>
+<div class="agent-btns"><button>Configure</button><button>View Logs</button></div>
+</div>
+<div class="agent">
+<div class="agent-top"><span class="agent-name">CodeBot</span><span class="agent-status"><span class="dot"></span> Online</span></div>
+<div class="agent-model">Model: Claude 3.5 Sonnet</div>
+<div class="agent-skills">Skills: code.run · git.status · code.edit</div>
+<div class="agent-meta"><span>17 tasks today</span><span>Last: 5 min ago</span></div>
+<div class="agent-btns"><button>Configure</button><button>View Logs</button></div>
+</div>
+<div class="agent">
+<div class="agent-top"><span class="agent-name">ResearchBot</span><span class="agent-status idle"><span class="dot"></span> Idle</span></div>
+<div class="agent-model">Model: GPT-4o</div>
+<div class="agent-skills">Skills: web.search · files.write · calendar.read</div>
+<div class="agent-meta"><span>3 tasks today</span><span>Last: 1h ago</span></div>
+<div class="agent-btns"><button>Configure</button><button>View Logs</button></div>
+</div>
+<div class="agent-add"><div class="plus">+</div><span>Create sub-agent</span></div>
+</div>
+<div class="activity">
+<h4><span class="live"></span> Live Activity</h4>
+<div class="act-row"><span class="agent-tag">Aria</span><span class="action">web.search "latest AI news" → 5 results</span><span class="time">2m ago</span></div>
+<div class="act-row"><span class="agent-tag">CodeBot</span><span class="action">code.run fibonacci.py → Exit 0</span><span class="time">5m ago</span></div>
+<div class="act-row"><span class="agent-tag">Aria</span><span class="action">files.read report.txt → 2.4KB</span><span class="time">8m ago</span></div>
+<div class="act-row"><span class="agent-tag">CodeBot</span><span class="action">git.status → 3 modified files</span><span class="time">12m ago</span></div>
+<div class="act-row"><span class="agent-tag">Research</span><span class="action">web.search "rust async" → 5 results</span><span class="time">1h ago</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ARCHITECTURE -->
 <section class="sec" id="architecture">
 <h2>Message pipeline.</h2>
-<div class="fl">
-<div class="fs a"><span class="fn">01</span><span class="fm">Input</span><span class="fd">Telegram / CLI / VS Code</span></div><div class="fa">↓</div>
-<div class="fs"><span class="fn">02</span><span class="fm">Sanitizer</span><span class="fd">Injection + PII</span></div><div class="fa">↓</div>
-<div class="fs b"><span class="fn">03</span><span class="fm">Governor</span><span class="fd">Permissions + sandbox + audit</span></div><div class="fa">↓</div>
-<div class="fs"><span class="fn">04</span><span class="fm">SOUL.md</span><span class="fd">Personality + skills</span></div><div class="fa">↓</div>
-<div class="fs"><span class="fn">05</span><span class="fm">LLM</span><span class="fd">Ollama / Claude / GPT</span></div><div class="fa">↓</div>
-<div class="fs"><span class="fn">06</span><span class="fm">Skills</span><span class="fd">14 sandboxed</span></div><div class="fa">↓</div>
-<div class="fs"><span class="fn">07</span><span class="fm">Memory</span><span class="fd">SQLite — local</span></div><div class="fa">↓</div>
-<div class="fs a"><span class="fn">08</span><span class="fm">Response</span><span class="fd">Signed · audited</span></div>
-</div></section>
-
-<section class="sec" id="compare">
-<h2>Comparison.</h2>
-<table class="cmp"><thead><tr><th></th><th>Kilo</th><th>Cline</th><th>Cursor</th><th class="hh">WRAP</th></tr></thead><tbody>
-<tr><td>Sandbox</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">V8</td></tr>
-<tr><td>Audit</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Ed25519</td></tr>
-<tr><td>PII</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Auto</td></tr>
-<tr><td>Local</td><td class="yy">✓</td><td class="yy">✓</td><td class="nn">✗</td><td class="yy hh">Default</td></tr>
-<tr><td>Free</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Yes</td></tr>
-<tr><td>Telegram</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Built-in</td></tr>
-</tbody></table></section>
-
-<section class="sec" id="code">
-<h2>Code.</h2>
-<div class="cb"><div class="ch"><span>code.run — sandbox</span><span>V8 isolate</span></div>
-<pre><span class="cm">// Temp dir · stripped env · 128MB · 30s</span>
-<span class="kw">const</span> proc = <span class="fnn">spawn</span>(cmd, args, {
-  <span class="fnn">cwd</span>: <span class="fnn">path.join</span>(sandbox, <span class="st">'workspace'</span>),
-  <span class="fnn">env</span>: { <span class="fnn">PATH</span>: <span class="st">'/usr/bin:/bin'</span>, <span class="fnn">HOME</span>: sandbox },
-  <span class="fnn">timeout</span>: <span class="nu">30000</span>,
-});</pre></div>
-<div class="cb"><div class="ch"><span>audit/trail.ts — signing</span><span>Ed25519</span></div>
-<pre><span class="kw">const</span> { privateKey } = crypto.<span class="fnn">generateKeyPairSync</span>(<span class="st">'ed25519'</span>);
-<span class="fnn">log</span>(action, input, output) {
-  <span class="kw">const</span> sig = crypto.<span class="fnn">sign</span>(<span class="kw">null</span>, <span class="fnn">Buffer.from</span>(hash), privateKey);
-  fs.<span class="fnn">appendFileSync</span>(logPath, <span class="fnn">JSON.stringify</span>(entry));
-}</pre></div>
+<div class="arch">
+<div class="arch-s a"><span class="arch-n">01</span><span class="arch-m">Input</span><span class="arch-d">Telegram / CLI / VS Code / Web</span></div>
+<div class="arch-a">↓</div>
+<div class="arch-s"><span class="arch-n">02</span><span class="arch-m">Input Sanitizer</span><span class="arch-d">Injection detection + PII redaction</span></div>
+<div class="arch-a">↓</div>
+<div class="arch-s b"><span class="arch-n">03</span><span class="arch-m">Rust Governor</span><span class="arch-d">Permissions + sandbox + audit sign</span></div>
+<div class="arch-a">↓</div>
+<div class="arch-s"><span class="arch-n">04</span><span class="arch-m">SOUL.md</span><span class="arch-d">Agent personality + skills + rules</span></div>
+<div class="arch-a">↓</div>
+<div class="arch-s"><span class="arch-n">05</span><span class="arch-m">LLM Provider</span><span class="arch-d">Ollama / Claude / GPT-4</span></div>
+<div class="arch-a">↓</div>
+<div class="arch-s"><span class="arch-n">06</span><span class="arch-m">Skill Executor</span><span class="arch-d">14 sandboxed skills</span></div>
+<div class="arch-a">↓</div>
+<div class="arch-s"><span class="arch-n">07</span><span class="arch-m">SQLite Memory</span><span class="arch-d">Persistent, local-only</span></div>
+<div class="arch-a">↓</div>
+<div class="arch-s a"><span class="arch-n">08</span><span class="arch-m">Response</span><span class="arch-d">Signed · audited · delivered</span></div>
+</div>
 </section>
 
-<section class="sec">
-<h2>Security.</h2>
-<p class="sub">Independent layers. Compromising one doesn't compromise the others.</p>
-<div class="sl">
-<div class="sll"><div class="sln">01</div><div class="slc"><strong>Input Sanitizer</strong><span>Injection (10), SQL (6), XSS (5). PII redacted.</span></div></div>
-<div class="sll"><div class="sln">02</div><div class="slc"><strong>Rust Governor</strong><span>Separate process. Binary-level audit signing.</span></div></div>
-<div class="sll"><div class="sln">03</div><div class="slc"><strong>V8 Sandbox</strong><span>Temp dir. No network. 128MB. 30s timeout.</span></div></div>
-<div class="sll"><div class="sln">04</div><div class="slc"><strong>Ed25519 Trail</strong><span>Append-only. Hash-chained. One function to verify.</span></div></div>
-<div class="sll"><div class="sln">05</div><div class="slc"><strong>SQLite Memory</strong><span>Local only. Never transmitted.</span></div></div>
-</div></section>
+<!-- COMPARISON -->
+<section class="sec" id="compare">
+<h2>The real comparison.</h2>
+<table class="cmp-t">
+<thead><tr><th>Capability</th><th>Kilo</th><th>Cline</th><th>Cursor</th><th class="hh">WRAP</th></tr></thead>
+<tbody>
+<tr><td>Sandbox</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">V8</td></tr>
+<tr><td>Audit trail</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Ed25519</td></tr>
+<tr><td>PII redaction</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Auto</td></tr>
+<tr><td>Local-first</td><td class="yy">✓</td><td class="yy">✓</td><td class="nn">✗</td><td class="yy hh">Default</td></tr>
+<tr><td>Free forever</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Yes</td></tr>
+<tr><td>Telegram</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Built-in</td></tr>
+<tr><td>Multi-agent</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">v11</td></tr>
+<tr><td>Plugins</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Hash-verified</td></tr>
+</tbody>
+</table>
+</section>
 
+<!-- CODE -->
+<section class="sec" id="code">
+<h2>Real code.</h2>
+<div class="tabs">
+<div class="tab active" onclick="showTab(0,this)">Install</div>
+<div class="tab" onclick="showTab(1,this)">SOUL.md</div>
+<div class="tab" onclick="showTab(2,this)">Sandbox</div>
+<div class="tab" onclick="showTab(3,this)">Audit</div>
+</div>
+<div class="cblock" id="tab0"><span class="cm"># One-line install</span>
+<span class="fn">curl</span> -fsSL https://raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | <span class="fn">bash</span>
+<span class="fn">nebula</span> init
+<span class="fn">nebula</span> start</div>
+<div class="cblock" id="tab1" style="display:none"><span class="cm"># SOUL.md — agent personality</span>
+Name: Aria
+Personality: Curious and direct assistant
+
+Skills enabled:
+- web.search
+- files.read
+- code.run
+
+Rules:
+- Never share API keys
+- Ask before deleting files</div>
+<div class="cblock" id="tab2" style="display:none"><span class="cm">// code.run — V8 sandboxed execution</span>
+<span class="kw">const</span> proc = <span class="fn">spawn</span>(cmd, args, {
+  <span class="fn">cwd</span>: <span class="fn">path.join</span>(sandbox, <span class="st">'workspace'</span>),
+  <span class="fn">env</span>: {
+    <span class="fn">PATH</span>: <span class="st">'/usr/bin:/bin'</span>,
+    <span class="fn">HOME</span>: sandbox,
+    <span class="fn">NODE_OPTIONS</span>: <span class="st">'--max-old-space-size=128'</span>,
+  },
+  <span class="fn">timeout</span>: <span class="nu">30000</span>,
+});</div>
+<div class="cblock" id="tab3" style="display:none"><span class="cm">// Ed25519 audit trail</span>
+<span class="kw">const</span> { privateKey } = crypto.<span class="fn">generateKeyPairSync</span>(<span class="st">'ed25519'</span>);
+
+<span class="fn">log</span>(action, input, output) {
+  <span class="kw">const</span> hash = <span class="fn">this.hash</span>(entryData);
+  <span class="kw">const</span> sig = crypto.<span class="fn">sign</span>(<span class="kw">null</span>, <span class="fn">Buffer.from</span>(hash), privateKey);
+  fs.<span class="fn">appendFileSync</span>(logPath, <span class="fn">JSON.stringify</span>(entry));
+}</div>
+</section>
+
+<!-- ROADMAP -->
 <section class="sec">
 <h2>Roadmap.</h2>
-<div class="fl">
-<div class="ri d"><span class="rv">v8</span><div class="rd"><h4>Core Agent</h4><p>Ollama, Claude, GPT. Sandbox, audit, CLI.</p></div><span class="rss d">Shipped</span></div>
-<div class="ri d"><span class="rv">v9</span><div class="rd"><h4>VS Code</h4><p>Chat, right-click, audit tree. .vsix</p></div><span class="rss d">Shipped</span></div>
-<div class="ri d"><span class="rv">v10</span><div class="rd"><h4>Plugins</h4><p>Manifest, loader, registry. Verified.</p></div><span class="rss d">Shipped</span></div>
-<div class="ri d"><span class="rv">v11</span><div class="rd"><h4>Multi-Agent</h4><p>Signed bus, delegation, registry.</p></div><span class="rss d">Shipped</span></div>
-<div class="ri c"><span class="rv">v12</span><div class="rd"><h4>Marketplace</h4><p>VS Code listing. Community.</p></div><span class="rss c">Active</span></div>
-<div class="ri f"><span class="rv">v13</span><div class="rd"><h4>Enterprise</h4><p>SSO. Teams. Compliance.</p></div><span class="rss f">Planned</span></div>
-</div></section>
+<div class="rmap">
+<div class="rm done"><div class="rm-v">v8</div><div class="rm-n">Core Agent</div><span class="rm-s d">Shipped</span></div>
+<div class="rm done"><div class="rm-v">v9</div><div class="rm-n">VS Code</div><span class="rm-s d">Shipped</span></div>
+<div class="rm done"><div class="rm-v">v10</div><div class="rm-n">Plugins</div><span class="rm-s d">Shipped</span></div>
+<div class="rm done"><div class="rm-v">v11</div><div class="rm-n">Multi-Agent</div><span class="rm-s d">Shipped</span></div>
+<div class="rm active"><div class="rm-v">v12</div><div class="rm-n">Marketplace</div><span class="rm-s a">Active</span></div>
+<div class="rm future"><div class="rm-v">v13</div><div class="rm-n">Enterprise</div><span class="rm-s f">Planned</span></div>
+</div>
+</section>
 
+<!-- INSTALL -->
 <section class="sec" id="install">
-<h2>Install.</h2>
-<div class="tm"><div class="tb"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="tt">install</span></div>
-<div class="tp">
-<div class="cm"># Install</div>
-<div><span class="p">$</span> curl -fsSL raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash</div>
-<div class="cm"># Configure</div>
-<div><span class="p">$</span> nebula init</div>
-<div class="cm"># Start (Ollama must be running)</div>
-<div><span class="p">$</span> ollama serve &amp; ollama pull llama3 &amp;&amp; nebula start</div>
-</div></div></section>
+<h2>Get started.</h2>
+<div class="inst">
+<div class="line"><span class="cm"># Install</span></div>
+<div class="line"><span class="cmd">$ curl -fsSL raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash</span><button class="copy" onclick="navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash')">Copy</button></div>
+<div class="line"><span class="cm"># Configure</span></div>
+<div class="line"><span class="cmd">$ nebula init</span><button class="copy" onclick="navigator.clipboard.writeText('nebula init')">Copy</button></div>
+<div class="line"><span class="cm"># Start (Ollama must be running)</span></div>
+<div class="line"><span class="cmd">$ ollama serve &amp;&amp; ollama pull llama3 &amp;&amp; nebula start</span><button class="copy" onclick="navigator.clipboard.writeText('ollama serve & ollama pull llama3 && nebula start')">Copy</button></div>
+</div>
+</section>
 
+<!-- FOOTER -->
 <footer>
-<div class="flk"><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="https://github.com/Vitalcheffe/Wrap/issues">Issues</a><a href="https://github.com/Vitalcheffe/Wrap/blob/main/CONTRIBUTING.md">Contribute</a></div>
-WRAP NEBULA v8.0 · <a href="https://github.com/Vitalcheffe">VitalCheffe</a> · 16 · Casablanca · MIT
+<div class="fl"><img src="media/logo-white.PNG" alt=""><span>WRAP NEBULA v8.0</span></div>
+<div class="lk">
+<a href="https://github.com/Vitalcheffe/Wrap">GitHub</a>
+<a href="https://github.com/Vitalcheffe/Wrap/issues">Issues</a>
+<a href="https://github.com/Vitalcheffe/Wrap/blob/main/CONTRIBUTING.md">Contribute</a>
+</div>
+<div class="cp">
+<a href="https://github.com/Vitalcheffe">VitalCheffe</a> · 16 · Casablanca · MIT
+</div>
 </footer>
+
+<script>
+function showTab(i,el){
+  document.querySelectorAll('.cblock').forEach(b=>b.style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab'+i).style.display='block';
+  el.classList.add('active');
+}
+</script>
 </body>
 </html>
