@@ -296,6 +296,37 @@ function startAPI(soul: SoulConfig) {
       } else {
         res.end(JSON.stringify([]));
       }
+    } else if (req.url === '/api/chat' && req.method === 'POST') {
+      let body = '';
+      req.on('data', (chunk: Buffer) => { body += chunk.toString(); });
+      req.on('end', async () => {
+        try {
+          const { sessionId, message } = JSON.parse(body);
+          if (!message) {
+            res.writeHead(400);
+            res.end(JSON.stringify({ error: 'Missing message' }));
+            return;
+          }
+          const reply = await processMessage(sessionId || 'api', message, soul, systemPrompt);
+          res.end(JSON.stringify({ reply }));
+        } catch (e: unknown) {
+          const err = e as Error;
+          res.writeHead(500);
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+    } else if (req.url?.startsWith('/api/audit')) {
+      if (auditTrail) {
+        if (req.url.includes('/stats')) {
+          const report = auditTrail.verifyAll();
+          res.end(JSON.stringify(report));
+        } else {
+          const entries = auditTrail.getRecent(50);
+          res.end(JSON.stringify(entries));
+        }
+      } else {
+        res.end(JSON.stringify([]));
+      }
     } else {
       res.writeHead(404);
       res.end(JSON.stringify({ error: 'Not found' }));

@@ -1,0 +1,167 @@
+{
+  "name": "wrap-nebula",
+  "displayName": "WRAP NEBULA — Zero Trust AI Agent",
+  "description": "The only AI coding agent with V8 sandbox, Ed25519 audit trail, and PII auto-redaction",
+  "version": "0.9.0",
+  "publisher": "VitalCheffe",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "AI",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "agent",
+    "coding-assistant",
+    "zero-trust",
+    "sandbox",
+    "privacy",
+    "ollama",
+    "claude",
+    "gpt"
+  ],
+  "activationEvents": [
+    "onCommand:wrap-nebula.start",
+    "onCommand:wrap-nebula.openChat",
+    "onCommand:wrap-nebula.configure"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "wrap-nebula.start",
+        "title": "WRAP NEBULA: Start Agent",
+        "category": "WRAP"
+      },
+      {
+        "command": "wrap-nebula.openChat",
+        "title": "WRAP NEBULA: Open Chat",
+        "category": "WRAP",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "wrap-nebula.configure",
+        "title": "WRAP NEBULA: Configure",
+        "category": "WRAP"
+      },
+      {
+        "command": "wrap-nebula.explainCode",
+        "title": "WRAP NEBULA: Explain Code",
+        "category": "WRAP"
+      },
+      {
+        "command": "wrap-nebula.fixCode",
+        "title": "WRAP NEBULA: Fix Code",
+        "category": "WRAP"
+      },
+      {
+        "command": "wrap-nebula.reviewCode",
+        "title": "WRAP NEBULA: Review Code",
+        "category": "WRAP"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "wrap-nebula.explainCode",
+          "when": "editorHasSelection",
+          "group": "wrap-nebula@1"
+        },
+        {
+          "command": "wrap-nebula.fixCode",
+          "when": "editorHasSelection",
+          "group": "wrap-nebula@2"
+        },
+        {
+          "command": "wrap-nebula.reviewCode",
+          "when": "editorHasSelection",
+          "group": "wrap-nebula@3"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "wrap-nebula.openChat",
+          "when": "true",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "WRAP NEBULA",
+      "properties": {
+        "wrap-nebula.apiUrl": {
+          "type": "string",
+          "default": "http://localhost:3001",
+          "description": "WRAP Core API URL"
+        },
+        "wrap-nebula.model": {
+          "type": "string",
+          "default": "llama3",
+          "description": "LLM model to use"
+        },
+        "wrap-nebula.sandboxEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable V8 sandbox for code execution"
+        },
+        "wrap-nebula.auditEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Ed25519 audit trail"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "wrap-nebula",
+          "title": "WRAP NEBULA",
+          "icon": "$(shield)"
+        }
+      ]
+    },
+    "views": {
+      "wrap-nebula": [
+        {
+          "type": "webview",
+          "id": "wrap-nebula.chat",
+          "name": "Chat"
+        },
+        {
+          "type": "tree",
+          "id": "wrap-nebula.audit",
+          "name": "Audit Trail"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -watch -p .",
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "lint": "eslint src --ext .ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^3.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vitalcheffe/Wrap"
+  },
+  "bugs": {
+    "url": "https://github.com/Vitalcheffe/Wrap/issues"
+  },
+  "homepage": "https://github.com/Vitalcheffe/Wrap#readme"
+}
