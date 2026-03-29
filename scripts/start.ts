@@ -44,14 +44,20 @@ async function ollamaChat(messages: Array<{ role: string; content: string }>): P
         } catch { reject(new Error(`Failed to parse: ${data.slice(0, 200)}`)); }
       });
     });
-    req.on('error', (e) => reject(new Error(`Ollama error: ${e.message}`)));
-    req.on('timeout', () => { req.destroy(); reject(new Error('Ollama timeout (120s)')); });
+    req.on('error', (e) => {
+      if (e.message.includes('ECONNREFUSED')) {
+        reject(new Error(`Ollama is not running. Start it with: ollama serve`));
+      } else {
+        reject(new Error(`Cannot connect to Ollama: ${e.message}. Is ollama serve running?`));
+      }
+    });
+    req.on('timeout', () => { req.destroy(); reject(new Error('Ollama timeout (120s). Model might be loading — try again.')); });
     req.write(body);
     req.end();
   });
 }
 
-async function checkOllama(): Promise<boolean> {
+async function checkOllama(): Promise<{ ok: boolean; running: boolean; modelAvailable: boolean; models: string[] }> {
   return new Promise((resolve) => {
     const url = new URL(`${OLLAMA_URL}/api/tags`);
     const req = http.get({ hostname: url.hostname, port: url.port || '11434', path: url.pathname, timeout: 5000 }, (res) => {
@@ -60,13 +66,14 @@ async function checkOllama(): Promise<boolean> {
       res.on('end', () => {
         try {
           const tags = JSON.parse(data);
-          const available = tags.models?.some((m: { name: string }) => m.name.startsWith(OLLAMA_MODEL));
-          resolve(!!available);
-        } catch { resolve(false); }
+          const models = (tags.models || []).map((m: { name: string }) => m.name);
+          const modelAvailable = models.some((name: string) => name.startsWith(OLLAMA_MODEL));
+          resolve({ ok: modelAvailable, running: true, modelAvailable, models });
+        } catch { resolve({ ok: false, running: true, modelAvailable: false, models: [] }); }
       });
     });
-    req.on('error', () => resolve(false));
-    req.on('timeout', () => { req.destroy(); resolve(false); });
+    req.on('error', () => resolve({ ok: false, running: false, modelAvailable: false, models: [] }));
+    req.on('timeout', () => { req.destroy(); resolve({ ok: false, running: false, modelAvailable: false, models: [] }); });
   });
 }
 
@@ -510,15 +517,27 @@ async function main() {
 
   // Check Ollama
   process.stdout.write('  [...] Connecting to Ollama...');
-  const ollamaOk = await checkOllama();
-  if (ollamaOk) {
+  const status = await checkOllama();
+  if (status.ok) {
     console.log(` ✓ ${OLLAMA_MODEL}`);
-  } else {
+  } else if (!status.running) {
     console.log(' ✗');
-    console.log(`\n  Ollama not running or model "${OLLAMA_MODEL}" not found.`);
-    console.log('  1. Install: curl -fsSL https://ollama.com/install.sh | sh');
-    console.log(`  2. Pull model: ollama pull ${OLLAMA_MODEL}`);
-    console.log('  3. Start Ollama: ollama serve\n');
+    console.log(`\n  ❌ Ollama is not running.`);
+    console.log('');
+    console.log('  Fix:');
+    console.log('    1. Install Ollama: curl -fsSL https://ollama.com/install.sh | sh');
+    console.log('    2. Start Ollama: ollama serve');
+    console.log(`    3. Pull model: ollama pull ${OLLAMA_MODEL}`);
+    console.log('    4. Run nebula start again\n');
+    process.exit(1);
+  } else if (!status.modelAvailable) {
+    console.log(' ✗');
+    console.log(`\n  ❌ Model "${OLLAMA_MODEL}" not found.`);
+    console.log('');
+    console.log(`  Available models: ${status.models.join(', ') || 'none'}`);
+    console.log('');
+    console.log(`  Fix: ollama pull ${OLLAMA_MODEL}`);
+    console.log('');
     process.exit(1);
   }
 
