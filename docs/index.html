@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WRAP NEBULA</title>
-<link rel="icon" href="media/logo-white.png">
+<title>WRAP NEBULA — Zero Trust AI Agent</title>
+<link rel="icon" href="media/logo-white.PNG">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#000;--s:#0a0a0a;--s2:#111;--b:#1a1a1a;--t:#e4e4e7;--d:#71717a;--g:#22c55e;--r:#ef4444;--bl:#3b82f6;--f:'SF Mono','Cascadia Code',monospace;--sf:-apple-system,system-ui,sans-serif}
@@ -20,6 +20,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.92);b
 
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(34,197,94,.04) 0%,transparent 70%);pointer-events:none}
+.banner{max-width:600px;width:80%;margin-bottom:40px;opacity:.9}
 .ht{font-family:var(--f);font-size:10px;color:var(--d);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;display:flex;align-items:center;gap:8px}
 .ht .dot{width:5px;height:5px;border-radius:50%;background:var(--g);animation:p 2s infinite}
 @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
@@ -64,12 +65,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.92);b
 .cmp{width:100%;border-collapse:collapse;font-size:13px}
 .cmp th,.cmp td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--b)}
 .cmp th{color:var(--d);font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
-.y{color:var(--g)}.n{color:var(--r)}.h{color:var(--g);font-weight:600}
+.yy{color:var(--g)}.nn{color:var(--r)}.hh{color:var(--g);font-weight:600}
 
 .cb{background:var(--s);border:1px solid var(--b);border-radius:8px;overflow:hidden;margin-bottom:20px}
 .ch{background:var(--s2);padding:8px 14px;font-family:var(--f);font-size:11px;color:var(--d);border-bottom:1px solid var(--b);display:flex;justify-content:space-between}
 .cb pre{padding:16px;overflow-x:auto;font-family:var(--f);font-size:12px;line-height:1.7}
-.kw{color:#c678dd}.fn{color:#61afef}.st{color:#98c379}.cm{color:#5c6370;font-style:italic}.nu{color:#d19a66}
+.kw{color:#c678dd}.fnn{color:#61afef}.st{color:#98c379}.cm{color:#5c6370;font-style:italic}.nu{color:#d19a66}
 
 .sl{display:flex;flex-direction:column}
 .sll{display:flex;background:var(--s);border:1px solid var(--b);border-bottom:none}
@@ -81,14 +82,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.92);b
 .ri.d{border-left-color:var(--g)}.ri.c{border-left-color:var(--bl)}.ri.f{border-left-color:var(--b);opacity:.6}
 .rv{font-family:var(--f);font-size:13px;font-weight:600;min-width:40px}
 .rd h4{font-size:14px;margin-bottom:2px}.rd p{font-size:12px;color:var(--d)}
-.rs{margin-left:auto;font-size:10px;padding:2px 10px;border-radius:100px;align-self:center}
-.rs.d{background:rgba(34,197,94,.12);color:var(--g)}.rs.c{background:rgba(59,130,246,.12);color:var(--bl)}.rs.f{background:var(--s2);color:var(--d)}
+.rss{margin-left:auto;font-size:10px;padding:2px 10px;border-radius:100px;align-self:center}
+.rss.d{background:rgba(34,197,94,.12);color:var(--g)}.rss.c{background:rgba(59,130,246,.12);color:var(--bl)}.rss.f{background:var(--s2);color:var(--d)}
 
 footer{border-top:1px solid var(--b);padding:40px 24px;text-align:center;font-size:12px;color:var(--d)}
 footer a{color:var(--g)}
 .flk{display:flex;gap:20px;justify-content:center;margin-bottom:12px}
 
-@media(max-width:768px){nav{padding:0 16px}.nr{display:none}.hero h1{font-size:28px;letter-spacing:-1px}.mtr{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}}
+@media(max-width:768px){nav{padding:0 16px}.nr{display:none}.hero h1{font-size:28px;letter-spacing:-1px}.mtr{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}.banner{width:90%}}
 </style>
 </head>
 <body>
@@ -99,6 +100,7 @@ footer a{color:var(--g)}
 </nav>
 
 <section class="hero">
+<img src="media/banner-white.PNG" alt="WRAP NEBULA" class="banner">
 <div class="ht"><span class="dot"></span> v8.0 · local-first · zero-trust</div>
 <h1>The AI agent<br>you can <span>verify</span>.</h1>
 <p>No cloud. No trust. Every action sandboxed, signed, auditable. Runs on your machine with Ollama. Free.</p>
@@ -148,29 +150,29 @@ footer a{color:var(--g)}
 
 <section class="sec" id="compare">
 <h2>Comparison.</h2>
-<table class="cmp"><thead><tr><th></th><th>Kilo</th><th>Cline</th><th>Cursor</th><th class="h">WRAP</th></tr></thead><tbody>
-<tr><td>Sandbox</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">V8</td></tr>
-<tr><td>Audit</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Ed25519</td></tr>
-<tr><td>PII</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Auto</td></tr>
-<tr><td>Local</td><td class="y">✓</td><td class="y">✓</td><td class="n">✗</td><td class="y h">Default</td></tr>
-<tr><td>Free</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Yes</td></tr>
-<tr><td>Telegram</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y h">Built-in</td></tr>
+<table class="cmp"><thead><tr><th></th><th>Kilo</th><th>Cline</th><th>Cursor</th><th class="hh">WRAP</th></tr></thead><tbody>
+<tr><td>Sandbox</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">V8</td></tr>
+<tr><td>Audit</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Ed25519</td></tr>
+<tr><td>PII</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Auto</td></tr>
+<tr><td>Local</td><td class="yy">✓</td><td class="yy">✓</td><td class="nn">✗</td><td class="yy hh">Default</td></tr>
+<tr><td>Free</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Yes</td></tr>
+<tr><td>Telegram</td><td class="nn">✗</td><td class="nn">✗</td><td class="nn">✗</td><td class="yy hh">Built-in</td></tr>
 </tbody></table></section>
 
 <section class="sec" id="code">
 <h2>Code.</h2>
 <div class="cb"><div class="ch"><span>code.run — sandbox</span><span>V8 isolate</span></div>
 <pre><span class="cm">// Temp dir · stripped env · 128MB · 30s</span>
-<span class="kw">const</span> proc = <span class="fn">spawn</span>(cmd, args, {
-  <span class="fn">cwd</span>: <span class="fn">path.join</span>(sandbox, <span class="st">'workspace'</span>),
-  <span class="fn">env</span>: { <span class="fn">PATH</span>: <span class="st">'/usr/bin:/bin'</span>, <span class="fn">HOME</span>: sandbox },
-  <span class="fn">timeout</span>: <span class="nu">30000</span>,
+<span class="kw">const</span> proc = <span class="fnn">spawn</span>(cmd, args, {
+  <span class="fnn">cwd</span>: <span class="fnn">path.join</span>(sandbox, <span class="st">'workspace'</span>),
+  <span class="fnn">env</span>: { <span class="fnn">PATH</span>: <span class="st">'/usr/bin:/bin'</span>, <span class="fnn">HOME</span>: sandbox },
+  <span class="fnn">timeout</span>: <span class="nu">30000</span>,
 });</pre></div>
 <div class="cb"><div class="ch"><span>audit/trail.ts — signing</span><span>Ed25519</span></div>
-<pre><span class="kw">const</span> { privateKey } = crypto.<span class="fn">generateKeyPairSync</span>(<span class="st">'ed25519'</span>);
-<span class="fn">log</span>(action, input, output) {
-  <span class="kw">const</span> sig = crypto.<span class="fn">sign</span>(<span class="kw">null</span>, <span class="fn">Buffer.from</span>(hash), privateKey);
-  fs.<span class="fn">appendFileSync</span>(logPath, <span class="fn">JSON.stringify</span>(entry));
+<pre><span class="kw">const</span> { privateKey } = crypto.<span class="fnn">generateKeyPairSync</span>(<span class="st">'ed25519'</span>);
+<span class="fnn">log</span>(action, input, output) {
+  <span class="kw">const</span> sig = crypto.<span class="fnn">sign</span>(<span class="kw">null</span>, <span class="fnn">Buffer.from</span>(hash), privateKey);
+  fs.<span class="fnn">appendFileSync</span>(logPath, <span class="fnn">JSON.stringify</span>(entry));
 }</pre></div>
 </section>
 
@@ -188,12 +190,12 @@ footer a{color:var(--g)}
 <section class="sec">
 <h2>Roadmap.</h2>
 <div class="fl">
-<div class="ri d"><span class="rv">v8</span><div class="rd"><h4>Core Agent</h4><p>Ollama, Claude, GPT. Sandbox, audit, CLI.</p></div><span class="rs d">Shipped</span></div>
-<div class="ri d"><span class="rv">v9</span><div class="rd"><h4>VS Code</h4><p>Chat, right-click, audit tree. .vsix</p></div><span class="rs d">Shipped</span></div>
-<div class="ri d"><span class="rv">v10</span><div class="rd"><h4>Plugins</h4><p>Manifest, loader, registry. Verified.</p></div><span class="rs d">Shipped</span></div>
-<div class="ri d"><span class="rv">v11</span><div class="rd"><h4>Multi-Agent</h4><p>Signed bus, delegation, registry.</p></div><span class="rs d">Shipped</span></div>
-<div class="ri c"><span class="rv">v12</span><div class="rd"><h4>Marketplace</h4><p>VS Code listing. Community.</p></div><span class="rs c">Active</span></div>
-<div class="ri f"><span class="rv">v13</span><div class="rd"><h4>Enterprise</h4><p>SSO. Teams. Compliance.</p></div><span class="rs f">Planned</span></div>
+<div class="ri d"><span class="rv">v8</span><div class="rd"><h4>Core Agent</h4><p>Ollama, Claude, GPT. Sandbox, audit, CLI.</p></div><span class="rss d">Shipped</span></div>
+<div class="ri d"><span class="rv">v9</span><div class="rd"><h4>VS Code</h4><p>Chat, right-click, audit tree. .vsix</p></div><span class="rss d">Shipped</span></div>
+<div class="ri d"><span class="rv">v10</span><div class="rd"><h4>Plugins</h4><p>Manifest, loader, registry. Verified.</p></div><span class="rss d">Shipped</span></div>
+<div class="ri d"><span class="rv">v11</span><div class="rd"><h4>Multi-Agent</h4><p>Signed bus, delegation, registry.</p></div><span class="rss d">Shipped</span></div>
+<div class="ri c"><span class="rv">v12</span><div class="rd"><h4>Marketplace</h4><p>VS Code listing. Community.</p></div><span class="rss c">Active</span></div>
+<div class="ri f"><span class="rv">v13</span><div class="rd"><h4>Enterprise</h4><p>SSO. Teams. Compliance.</p></div><span class="rss f">Planned</span></div>
 </div></section>
 
 <section class="sec" id="install">
