@@ -18,3 +18,4 @@ target/
 *.vsix
 packages/core/node_modules/
 output.txt
+auth.json
