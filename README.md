@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/media/banner-black.PNG" alt="WRAP NEBULA" width="600">
+</p>
+
 # WRAP NEBULA
 
 The AI agent you can actually verify.
