@@ -1,256 +1,192 @@
-#!/bin/bash
-NEBULA_DIR="$HOME/.nebula"
+#!/usr/bin/env python3
+"""WRAP NEBULA CLI"""
+import sys, os, json, time, subprocess, getpass, urllib.request
 
-if [ ! -d "$NEBULA_DIR" ]; then
-    echo "NEBULA not installed. Run: curl -fsSL https://raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash"
-    exit 1
-fi
+NEBULA_DIR = os.path.expanduser('~/.nebula')
+AUTH_FILE = os.path.join(NEBULA_DIR, 'auth-profiles.json')
+CONFIG_FILE = os.path.join(NEBULA_DIR, 'config.yaml')
+SOUL_FILE = os.path.join(NEBULA_DIR, 'SOUL.md')
 
-# Load .env if exists
-if [ -f "$NEBULA_DIR/.env" ]; then
-    set -a; source "$NEBULA_DIR/.env"; set +a
-fi
+G = '\033[32m'  # green
+R = '\033[31m'  # red
+Y = '\033[33m'  # yellow
+C = '\033[36m'  # cyan
+N = '\033[0m'   # reset
 
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+def banner():
+    print(f'''
+ ██╗    ██╗██████╗  █████╗ ██████╗
+ ██║    ██║██╔══██╗██╔══██╗██╔══██╗
+ ██║ █╗ ██║██████╔╝███████║██████╔╝
+ ██║███╗██║██╔══██╗██╔══██║██╔═══╝
+ ╚███╔███╔╝██║  ██║██║  ██║██║
+  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝
 
-check() {
-    if [ $2 -eq 0 ]; then
-        echo -e "  ${GREEN}✓${NC} $1"
-    else
-        echo -e "  ${RED}✗${NC} $1"
-    fi
-}
+ NEBULA v8.0 by VitalCheffe
+''')
 
-check_val() {
-    if [ -n "$2" ]; then
-        echo -e "  ${GREEN}✓${NC} $1: $2"
-    else
-        echo -e "  ${YELLOW}⚠${NC} $1: not set"
-    fi
-}
+# ─── Auth ────────────────────────────────────────────────────────────
 
-case "$1" in
-    init)
-        cd "$NEBULA_DIR"
-        node -e "
-const inquirer = require('inquirer');
-const chalk = require('chalk');
-const fs = require('fs');
-const yaml = require('yaml');
-const os = require('os');
+def auth_load():
+    try: return json.load(open(AUTH_FILE))
+    except: return {'version': 1, 'profiles': {}}
 
-console.log(chalk.cyan('\n  WRAP NEBULA — Setup Wizard\n'));
+def auth_save(store):
+    os.makedirs(os.path.dirname(AUTH_FILE), exist_ok=True)
+    json.dump(store, open(AUTH_FILE, 'w'), indent=2)
 
-(async () => {
-  const answers = await inquirer.prompt([
-    { type: 'list', name: 'model', message: 'AI backend:',
-      choices: [
-        { name: 'Ollama (free, local) — recommended', value: 'ollama' },
-        { name: 'Claude (Anthropic API key)', value: 'anthropic' },
-        { name: 'GPT-4 (OpenAI API key)', value: 'openai' }
-      ]},
-    { type: 'password', name: 'apiKey', message: 'API key:', mask: '*', when: (a) => a.model !== 'ollama' },
-    { type: 'input', name: 'agentName', message: 'Agent name:', default: 'Aria' },
-    { type: 'confirm', name: 'enableTelegram', message: 'Enable Telegram?', default: false },
-    { type: 'input', name: 'tgToken', message: 'Telegram bot token:', when: (a) => a.enableTelegram }
-  ]);
+def cmd_auth_login(provider=None):
+    if not provider:
+        print('  Choose provider:')
+        print('  1) anthropic (Claude)')
+        print('  2) openai (GPT-4)')
+        print('  3) ollama (local, free)')
+        c = input('  Choice (1/2/3): ')
+        provider = {'1': 'anthropic', '2': 'openai', '3': 'ollama'}.get(c)
+        if not provider:
+            print(f'  {R}Invalid choice{N}')
+            return
 
-  const config = {
-    model: {
-      provider: answers.model,
-      model: answers.model === 'anthropic' ? 'claude-sonnet-4-20250514' : answers.model === 'openai' ? 'gpt-4o' : 'llama3',
-      apiKey: answers.apiKey || ''
-    },
-    agent: { name: answers.agentName, language: 'English' },
-    channels: answers.enableTelegram ? [{ type: 'telegram', enabled: true, token: answers.tgToken }] : []
-  };
+    if provider == 'ollama':
+        try:
+            urllib.request.urlopen('http://localhost:11434/api/tags', timeout=3)
+            store = auth_load()
+            store['profiles']['ollama:default'] = {
+                'type': 'api_key', 'provider': 'ollama', 'key': 'local', 'createdAt': int(time.time()*1000)
+            }
+            store.setdefault('lastGood', {})['ollama'] = 'default'
+            auth_save(store)
+            print(f'  {G}Saved ollama:default{N}')
+        except:
+            print(f'  {R}Ollama not running. Start with: ollama serve{N}')
+    else:
+        key = getpass.getpass('  Paste your API key: ')
+        if not key:
+            print('  No key entered')
+            return
+        store = auth_load()
+        store['profiles'][f'{provider}:default'] = {
+            'type': 'api_key', 'provider': provider, 'key': key, 'createdAt': int(time.time()*1000)
+        }
+        store.setdefault('lastGood', {})[provider] = 'default'
+        auth_save(store)
+        print(f'  {G}Saved {provider}:default{N}')
 
-  fs.writeFileSync(os.homedir() + '/.nebula/config.yaml', yaml.stringify(config));
-  const soul = '# SOUL.md\n\nName: ' + answers.agentName + '\nPersonality: Curious and direct assistant\n\nSkills enabled:\n- web.search\n- files.read\n- files.write\n- code.run\n- reminder.set\n\nRules:\n- Never share API keys\n- Ask before deleting files\n- Keep answers concise\n';
-  fs.writeFileSync(os.homedir() + '/.nebula/SOUL.md', soul);
-  const env = 'OLLAMA_BASE_URL=http://localhost:11434\nOLLAMA_MODEL=' + config.model.model + '\n' + (answers.apiKey ? (answers.model === 'anthropic' ? 'ANTHROPIC_API_KEY' : 'OPENAI_API_KEY') + '=' + answers.apiKey + '\n' : '') + (answers.tgToken ? 'TELEGRAM_BOT_TOKEN=' + answers.tgToken + '\n' : '');
-  fs.writeFileSync(os.homedir() + '/.nebula/.env', env);
-  console.log(chalk.green('\n  Done! Config saved.\n'));
-  console.log(chalk.yellow('  Next: nebula start\n'));
-})();
-"
-        ;;
-    start)
-        source "$NEBULA_DIR/.env" 2>/dev/null
-        cd "$NEBULA_DIR"
-        npx tsx "$NEBULA_DIR/start-agent.ts"
-        ;;
-    stop)
-        pkill -f "start-agent" 2>/dev/null && echo -e "${GREEN}✓${NC} Stopped" || echo "Not running"
-        ;;
-    status)
-        if pgrep -f "start-agent" > /dev/null; then
-            echo -e "${GREEN}✓${NC} NEBULA is running"
-        else
-            echo -e "${YELLOW}○${NC} NEBULA is stopped"
-        fi
-        if [ -f "$NEBULA_DIR/config.yaml" ]; then
-            echo ""
-            cat "$NEBULA_DIR/config.yaml"
-        fi
-        ;;
-    doctor)
-        echo -e "${CYAN}"
-        echo "  🔍 WRAP NEBULA Health Check"
-        echo -e "${NC}"
+def cmd_auth_list():
+    store = auth_load()
+    profiles = store.get('profiles', {})
+    if not profiles:
+        print('  No profiles. Run: nebula auth login')
+        return
+    print(f'  {"Profile":<27} {"Type":<10} {"Added"}')
+    print(f'  {"-------":<27} {"----":<10} {"-----"}')
+    for pid, cred in profiles.items():
+        ago = int((time.time() * 1000 - cred.get('createdAt', 0)) / 86400000)
+        ago_str = f'{ago}d ago' if ago > 0 else 'just now'
+        print(f'  {pid:<27} {cred.get("type", "?"):<10} {ago_str}')
 
-        # Node
-        node_ver=$(node --version 2>/dev/null)
-        node_major=$(echo "$node_ver" | sed 's/v//' | cut -d. -f1)
-        if [ -n "$node_major" ] && [ "$node_major" -ge 18 ] 2>/dev/null; then
-            echo -e "  ${GREEN}✓${NC} Node.js $node_ver"
-        else
-            echo -e "  ${RED}✗${NC} Node.js 18+ required (found: ${node_ver:-none})"
-        fi
+def cmd_auth_logout(provider):
+    if not provider:
+        print('  Usage: nebula auth logout <provider>')
+        return
+    store = auth_load()
+    removed = [k for k in list(store.get('profiles', {}).keys()) if k.startswith(f'{provider}:')]
+    for k in removed:
+        del store['profiles'][k]
+    auth_save(store)
+    if removed:
+        print(f'  {G}Logged out from {", ".join(removed)}{N}')
+    else:
+        print(f'  No profiles for {provider}')
 
-        # npm
-        npm_ver=$(npm --version 2>/dev/null)
-        check_val "npm" "$npm_ver"
+def cmd_auth_status():
+    store = auth_load()
+    profiles = store.get('profiles', {})
+    if profiles:
+        providers = set(v.get('provider', '?') for v in profiles.values())
+        print(f'  {G}Auth: {len(profiles)} profile(s) — {", ".join(providers)}{N}')
+    else:
+        print(f'  {Y}Auth: not authenticated{N}')
 
-        # Config
-        [ -f "$NEBULA_DIR/config.yaml" ]
-        check "config.yaml" $?
+# ─── Core commands ───────────────────────────────────────────────────
 
-        # SOUL.md
-        [ -f "$NEBULA_DIR/SOUL.md" ]
-        check "SOUL.md" $?
+def cmd_help():
+    print(f'''  {C}WRAP NEBULA — Zero Trust AI Agent Framework{N}
 
-        # .env
-        [ -f "$NEBULA_DIR/.env" ]
-        check ".env" $?
+  Commands:
+    init           Setup wizard
+    start          Start the agent
+    stop           Stop the agent
+    status         Show status
+    doctor         Health check
+    auth login     Authenticate with a provider
+    auth list      Show saved credentials
+    auth logout    Remove a credential
+    auth status    Show auth status
+''')
 
-        # Provider
-        provider=$(grep 'provider:' "$NEBULA_DIR/config.yaml" 2>/dev/null | awk '{print $2}')
-        model=$(grep 'model:' "$NEBULA_DIR/config.yaml" 2>/dev/null | head -1 | awk '{print $2}')
-        echo ""
-        echo -e "  ${CYAN}Provider:${NC} ${provider:-ollama} (${model:-llama3})"
+def cmd_doctor():
+    print(f'  {C}Health Check{N}')
+    import platform
+    print(f'  Node: {subprocess.getoutput("node --version").strip() or "not found"}')
+    print(f'  Python: {platform.python_version()}')
+    print(f'  Config: {"OK" if os.path.exists(CONFIG_FILE) else "MISSING"}')
+    print(f'  SOUL: {"OK" if os.path.exists(SOUL_FILE) else "MISSING"}')
+    cmd_auth_status()
 
-        if [ "$provider" = "ollama" ] || [ -z "$provider" ]; then
-            if curl -s --max-time 3 "http://localhost:11434/api/tags" > /dev/null 2>&1; then
-                echo -e "  ${GREEN}✓${NC} Ollama is running"
-                models=$(curl -s "http://localhost:11434/api/tags" | python3 -c "import sys,json; [print('    -',m['name']) for m in json.load(sys.stdin).get('models',[])]" 2>/dev/null)
-                if [ -n "$models" ]; then
-                    echo "  Available models:"
-                    echo "$models"
-                fi
-            else
-                echo -e "  ${RED}✗${NC} Ollama not running"
-                echo -e "  ${YELLOW}Fix:${NC} ollama serve"
-            fi
-        elif [ "$provider" = "anthropic" ]; then
-            if grep -q "ANTHROPIC_API_KEY=." "$NEBULA_DIR/.env" 2>/dev/null; then
-                echo -e "  ${GREEN}✓${NC} Anthropic API key set"
-            else
-                echo -e "  ${RED}✗${NC} ANTHROPIC_API_KEY not set"
-            fi
-        elif [ "$provider" = "openai" ]; then
-            if grep -q "OPENAI_API_KEY=." "$NEBULA_DIR/.env" 2>/dev/null; then
-                echo -e "  ${GREEN}✓${NC} OpenAI API key set"
-            else
-                echo -e "  ${RED}✗${NC} OPENAI_API_KEY not set"
-            fi
-        fi
+def cmd_status():
+    import signal
+    try:
+        subprocess.check_output(['pgrep', '-f', 'start-agent'], stderr=subprocess.DEVNULL)
+        print(f'  {G}Running{N}')
+    except:
+        print(f'  {Y}Stopped{N}')
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE) as f:
+            print(f.read())
 
-        # Telegram
-        if grep -q "TELEGRAM_BOT_TOKEN=." "$NEBULA_DIR/.env" 2>/dev/null; then
-            echo -e "  ${GREEN}✓${NC} Telegram configured"
-        else
-            echo -e "  ${YELLOW}⚠${NC} Telegram not configured"
-        fi
+def cmd_init():
+    print(f'  {C}Setup wizard{N}')
+    print('  Run the interactive wizard:')
+    print(f'  {Y}cd {NEBULA_DIR} && node -e "..."  (or use the web UI){N}')
 
-        # Memory
-        if [ -f "$NEBULA_DIR/memory.json" ]; then
-            entries=$(python3 -c "import json; print(len(json.load(open('$NEBULA_DIR/memory.json'))))" 2>/dev/null || echo 0)
-            echo -e "  ${GREEN}✓${NC} Memory: $entries entries"
-        else
-            echo -e "  ${YELLOW}⚠${NC} Memory: empty"
-        fi
+# ─── Main ────────────────────────────────────────────────────────────
 
-        # Disk space
-        avail=$(df -h "$NEBULA_DIR" | tail -1 | awk '{print $4}')
-        echo -e "  ${GREEN}✓${NC} Disk: $avail available"
+def main():
+    args = sys.argv[1:]
+    cmd = args[0] if args else 'help'
 
-        echo ""
-        ;;
-    version|--version|-v)
-        echo "NEBULA v8.0.0"
-        ;;
-    auth)
-        action="${2:-help}"
-        AUTH_FILE="$HOME/.nebula/auth.json"
-        case $action in
-            login)
-                provider="${3:-}"
-                if [ -z "$provider" ]; then
-                    echo "Choose provider:"
-                    echo "  1) anthropic (Claude)"
-                    echo "  2) openai (GPT-4)"
-                    echo "  3) ollama (local, free)"
-                    read -p "Choice (1/2/3): " choice
-                    case $choice in 1) provider="anthropic" ;; 2) provider="openai" ;; 3) provider="ollama" ;; *) echo "Invalid"; return ;; esac
-                fi
-                if [ "$provider" = "ollama" ]; then
-                    if curl -s --max-time 3 http://localhost:11434/api/tags > /dev/null 2>&1; then
-                        mkdir -p "$(dirname "$AUTH_FILE")"
-                        python3 -c "import json,os,time; a={}; a=json.load(open('$AUTH_FILE')) if os.path.exists('$AUTH_FILE') else {}; a.setdefault('credentials',{})['ollama']={'type':'api','provider':'ollama','key':'local','createdAt':int(time.time()*1000)}; json.dump(a,open('$AUTH_FILE','w'),indent=2)"
-                        echo -e "${GREEN}✓${NC} Ollama connected (local, no key needed)"
-                    else
-                        echo -e "${RED}✗${NC} Ollama not running. Start with: ollama serve"
-                    fi
-                else
-                    read -sp "Paste your API key: " apikey; echo ""
-                    if [ -z "$apikey" ]; then echo "No key entered"; return; fi
-                    mkdir -p "$(dirname "$AUTH_FILE")"
-                    python3 -c "import json,os,time; a={}; a=json.load(open('$AUTH_FILE')) if os.path.exists('$AUTH_FILE') else {}; a.setdefault('credentials',{})['$provider']={'type':'api','provider':'$provider','key':'$apikey','createdAt':int(time.time()*1000)}; json.dump(a,open('$AUTH_FILE','w'),indent=2)"
-                    echo -e "${GREEN}✓${NC} $provider API key saved"
-                fi
-                ;;
-            list)
-                if [ ! -f "$AUTH_FILE" ]; then echo "No credentials. Run: nebula auth login"; return; fi
-                python3 /tmp/auth_list.py
-                ;;
-            logout)
-                provider="${3:-}"
-                if [ -z "$provider" ]; then echo "Usage: nebula auth logout <provider>"; return; fi
-                python3 -c "import json,os; a=json.load(open('$AUTH_FILE')) if os.path.exists('$AUTH_FILE') else {}; a.get('credentials',{}).pop('$provider',None); json.dump(a,open('$AUTH_FILE','w'),indent=2); print('Logged out from $provider')"
-                ;;
-            status)
-                if [ -f "$AUTH_FILE" ]; then
-                    p=$(python3 -c "import json; print(', '.join(json.load(open('$AUTH_FILE')).get('credentials',{}).keys()))" 2>/dev/null)
-                    if [ -n "$p" ]; then echo -e "${GREEN}✓${NC} Authenticated ($p)"; else echo "Not authenticated"; fi
-                else echo "Not authenticated"; fi
-                ;;
-            *) echo "Usage: nebula auth <login|list|logout|status> [provider]" ;;
-        esac
-        ;;
-    help|--help|-h|*)
-        echo -e "${CYAN}"
-        echo "  WRAP NEBULA — Zero Trust AI Agent Framework"
-        echo -e "${NC}"
-        echo "  Usage: nebula <command>"
-        echo ""
-        echo "  Commands:"
-        echo "    init      Setup wizard"
-        echo "    start     Start the agent"
-        echo "    stop      Stop the agent"
-        echo "    status    Show status"
-        echo "    doctor    Health check"
-        echo "    skill     Manage skills"
-        echo "    agents    Multi-agent info"
-        echo "    auth      Manage authentication"
-        echo ""
-        echo "  Examples:"
-        echo "    nebula init"
-        echo "    nebula start"
-        echo "    nebula doctor"
-        ;;
-esac
+    if cmd == 'auth':
+        sub = args[1] if len(args) > 1 else 'help'
+        arg = args[2] if len(args) > 2 else None
+        if sub == 'login': cmd_auth_login(arg)
+        elif sub == 'list': cmd_auth_list()
+        elif sub == 'logout': cmd_auth_logout(arg)
+        elif sub == 'status': cmd_auth_status()
+        elif sub == 'help': print('  Usage: nebula auth <login|list|logout|status>')
+        else: print(f'  Unknown: auth {sub}')
+    elif cmd == 'help' or cmd == '--help':
+        banner()
+        cmd_help()
+    elif cmd == 'doctor':
+        banner()
+        cmd_doctor()
+    elif cmd == 'status':
+        cmd_status()
+    elif cmd == 'init':
+        banner()
+        cmd_init()
+    elif cmd == 'start':
+        print('  Starting NEBULA...')
+        subprocess.run(['npx', 'tsx', f'{NEBULA_DIR}/start-agent.ts'], cwd=NEBULA_DIR)
+    elif cmd == 'stop':
+        subprocess.run(['pkill', '-f', 'start-agent'], stderr=subprocess.DEVNULL)
+        print('  Stopped')
+    elif cmd == 'version' or cmd == '-v':
+        print('NEBULA v8.0.0')
+    else:
+        print(f'  Unknown command: {cmd}')
+        cmd_help()
+
+if __name__ == '__main__':
+    main()
