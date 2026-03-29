@@ -3,98 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WRAP NEBULA</title>
+<title>WRAP NEBULA — The AI Agent You Can Verify</title>
 <link rel="icon" href="media/logo-light.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#FAFBFC;--sf:#FFFFFF;--cd:#F4F6F8;--bd:#E5E8EB;--bl:#007AFF;--bl2:#0056CC;--gr:#34C759;--pp:#AF52DE;--tx:#1D1D1F;--tx2:#6E6E73;--tx3:#AEAEB2;--f:'Inter',-apple-system,sans-serif;--m:'JetBrains Mono',monospace}
+:root{--bg:#FAFBFC;--sf:#FFF;--cd:#F4F6F8;--bd:#E2E5E9;--bl:#2563EB;--bl2:#1D4ED8;--gr:#16A34A;--pp:#7C3AED;--or:#EA580C;--tx:#0F172A;--tx2:#475569;--tx3:#94A3B8;--f:'Inter',-apple-system,sans-serif;--m:'JetBrains Mono',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}body{background:var(--bg);color:var(--tx);font-family:var(--f);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--tx);font-family:var(--f)}
+::selection{background:var(--bl);color:#fff}a{color:inherit;text-decoration:none}
 
-/* NAV — Apple-style */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,251,252,.72);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.06);height:52px;display:flex;align-items:center;padding:0 40px;justify-content:space-between}
-.nl{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;letter-spacing:-.5px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,251,252,.8);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--bd);height:56px;display:flex;align-items:center;padding:0 40px;justify-content:space-between}
+.nl{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700}
+.nl img{height:28px}
 .nr{display:flex;gap:24px;align-items:center}
 .nr a{color:var(--tx2);font-size:13px;font-weight:500;transition:color .15s}
 .nr a:hover{color:var(--tx)}
-.nbb{background:var(--bl);color:#fff;padding:7px 16px;border-radius:980px;font-size:13px;font-weight:600;transition:background .15s}
+.nbb{background:var(--bl);color:#fff;padding:8px 18px;border-radius:980px;font-size:13px;font-weight:600}
 .nbb:hover{background:var(--bl2)}
 
-/* HERO */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;perspective:1000px}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px}
 .bdg{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid var(--bd);border-radius:980px;font-size:12px;color:var(--tx2);margin-bottom:28px;background:var(--sf)}
 .bdg .d{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:pls 2s infinite}
 @keyframes pls{0%,100%{opacity:1}50%{opacity:.3}}
-.hero h1{font-size:clamp(44px,8vw,80px);font-weight:900;line-height:1.03;letter-spacing:-4px;margin-bottom:16px;background:linear-gradient(135deg,var(--tx) 0%,var(--bl) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{font-size:18px;color:var(--tx2);max-width:520px;line-height:1.6;margin-bottom:36px;font-weight:400}
-.cta{display:flex;gap:12px;margin-bottom:48px}
-.cp{padding:14px 28px;background:var(--bl);color:#fff;border-radius:12px;font-size:15px;font-weight:600;transition:all .2s;border:none;cursor:pointer}
-.cp:hover{background:var(--bl2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,122,255,.3)}
-.cs{padding:14px 28px;border:1px solid var(--bd);border-radius:12px;font-size:15px;color:var(--tx2);background:var(--sf);transition:all .2s;cursor:pointer}
+.hero h1{font-size:clamp(44px,8vw,80px);font-weight:900;line-height:1.03;letter-spacing:-4px;margin-bottom:16px;background:linear-gradient(135deg,var(--tx),var(--bl));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:var(--tx2);max-width:520px;line-height:1.6;margin-bottom:36px}
+.cta{display:flex;gap:12px;margin-bottom:56px}
+.cp{padding:14px 28px;background:var(--bl);color:#fff;border-radius:12px;font-size:15px;font-weight:600;border:none;cursor:pointer;transition:all .2s}
+.cp:hover{background:var(--bl2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,99,235,.25)}
+.cs{padding:14px 28px;border:1px solid var(--bd);border-radius:12px;font-size:15px;color:var(--tx2);background:var(--sf);cursor:pointer;transition:all .2s}
 .cs:hover{border-color:var(--tx2);color:var(--tx)}
 
-/* STATS — Apple-style cards */
-.sts{display:flex;gap:16px;margin-bottom:56px;flex-wrap:wrap;justify-content:center}
-.st{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:20px 28px;text-align:center;min-width:140px;transition:transform .2s,box-shadow .2s}
+.sts{display:flex;gap:16px;margin-bottom:48px;flex-wrap:wrap;justify-content:center}
+.st{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:20px 28px;text-align:center;min-width:140px;transition:all .2s}
 .st:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
 .stn{font-family:var(--m);font-size:24px;font-weight:700;color:var(--bl)}
 .stl{font-size:11px;color:var(--tx3);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
 
-/* TERMINAL — Apple-style window */
-.tw{max-width:720px;width:100%;background:var(--tx);border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.tw{max-width:720px;width:100%;background:var(--tx);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.12)}
 .twb{background:#2D2D2D;padding:12px 16px;display:flex;align-items:center;gap:8px}
-.tdd{width:12px;height:12px;border-radius:50%}.tdd.r{background:#FF5F57}.tdd.y{background:#FEBC2E}.tdd.g{background:#28C840}
+.td{width:12px;height:12px;border-radius:50%}.td.r{background:#FF5F57}.td.y{background:#FEBC2E}.td.g{background:#28C840}
 .twt{color:#98989D;font-size:12px;margin-left:12px;font-family:var(--f)}
-.twc{padding:20px;font-family:var(--m);font-size:13px;line-height:2;color:#E0E0E0;min-height:200px}
-.pk{color:#22C55E}.po{color:#8E8E93}.ps{color:#22C55E}.pi{color:#0A84FF}.pd{color:#48484A}.cm{color:#636366}
+.twc{padding:20px;font-family:var(--m);font-size:13px;line-height:2;color:#E0E0E0;min-height:220px}
+.pk{color:#22C55E}.po{color:#8E8E93}.ps{color:#22C55E}.pi{color:#0A84FF}.pd{color:#48484A}
 
-/* SECTIONS */
 .sec{max-width:1040px;margin:0 auto;padding:100px 24px}
 .sec h2{font-size:40px;font-weight:800;margin-bottom:12px;letter-spacing:-2px}
 .sec .sub{color:var(--tx2);font-size:17px;margin-bottom:56px;max-width:560px;line-height:1.6}
 
-/* FEATURES — Apple-style glass cards */
 .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.fc{background:rgba(255,255,255,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,.06);border-radius:20px;padding:32px;transition:all .3s;transform-style:preserve-3d;cursor:default}
-.fc:hover{transform:translateY(-4px) rotateX(2deg) rotateY(-2deg);box-shadow:0 12px 40px rgba(0,0,0,.08);border-color:rgba(0,122,255,.2)}
-.fc .ict{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;margin-bottom:16px;font-family:var(--m)}
-.fc .ict.b{background:rgba(0,122,255,.1);color:var(--bl)}
-.fc .ict.p{background:rgba(175,82,222,.1);color:var(--pp)}
-.fc .ict.g{background:rgba(52,199,89,.1);color:var(--gr)}
+.fc{background:var(--sf);border:1px solid var(--bd);border-radius:20px;padding:32px;transition:all .3s;cursor:default}
+.fc:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.06);border-color:rgba(37,99,235,.2)}
+.fc .ict{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-bottom:16px;font-family:var(--m)}
+.fc .ict.b{background:rgba(37,99,235,.1);color:var(--bl)}
+.fc .ict.p{background:rgba(124,58,237,.1);color:var(--pp)}
+.fc .ict.g{background:rgba(22,163,74,.1);color:var(--gr)}
+.fc .ict.o{background:rgba(234,88,12,.1);color:var(--or)}
 .fc h3{font-size:17px;font-weight:700;margin-bottom:8px}
 .fc p{font-size:14px;color:var(--tx2);line-height:1.6}
 .fc code{background:var(--cd);padding:2px 6px;border-radius:4px;font-family:var(--m);font-size:12px;color:var(--bl)}
 
-/* PIPELINE */
-.pl{display:flex;flex-direction:column;gap:0;perspective:800px}
-.ps2{display:flex;align-items:center;padding:18px 24px;background:var(--sf);border:1px solid var(--bd);border-bottom:none;transition:all .2s;transform-style:preserve-3d}
+.pl{display:flex;flex-direction:column}
+.ps2{display:flex;align-items:center;padding:18px 24px;background:var(--sf);border:1px solid var(--bd);border-bottom:none;transition:all .2s}
 .ps2:first-child{border-radius:16px 16px 0 0}.ps2:last-child{border-radius:0 0 16px 16px;border-bottom:1px solid var(--bd)}
-.ps2:hover{transform:translateX(8px);border-left:3px solid var(--bl);background:rgba(0,122,255,.02)}
-.ps2.bl{border-left:3px solid var(--bl)}.ps2.pp{border-left:3px solid var(--pp)}
+.ps2:hover{transform:translateX(6px);border-left:3px solid var(--bl);background:rgba(37,99,235,.02)}
+.bl{border-left:3px solid var(--bl)}.pp{border-left:3px solid var(--pp)}
 .pn{font-family:var(--m);font-size:11px;color:var(--tx3);min-width:32px}
 .pm{font-weight:600;font-size:14px}
 .pd2{font-size:12px;color:var(--tx2);margin-left:auto}
 
-/* COMPARISON */
-.cmp{width:100%;border-collapse:collapse;font-size:14px;background:var(--sf);border-radius:12px;overflow:hidden;border:1px solid var(--bd)}
+.cmp{width:100%;border-collapse:collapse;font-size:14px;background:var(--sf);border-radius:16px;overflow:hidden;border:1px solid var(--bd)}
 .cmp th,.cmp td{padding:14px 20px;text-align:left;border-bottom:1px solid var(--bd)}
 .cmp th{background:var(--cd);color:var(--tx3);font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
 .yy{color:var(--gr);font-weight:600}.nn{color:#EF4444}.hh{color:var(--bl);font-weight:600}
 
-/* CODE — Apple-style */
 .cb{background:var(--tx);border-radius:16px;overflow:hidden;margin-bottom:24px;box-shadow:0 12px 40px rgba(0,0,0,.1)}
 .ch{background:#2D2D2D;padding:12px 20px;font-family:var(--m);font-size:12px;color:#98989D;display:flex;justify-content:space-between;border-bottom:1px solid #3A3A3C}
 .cb pre{padding:24px;overflow-x:auto;font-family:var(--m);font-size:13px;line-height:1.8;color:#E0E0E0}
 .kw{color:#FF79C6}.fnn{color:#50FA7B}.st{color:#F1FA8C}.cm{color:#6272A4;font-style:italic}.nu{color:#BD93F9}
 
-/* SECURITY LAYERS */
 .sl{display:flex;flex-direction:column;gap:12px}
 .sll{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;transition:all .2s}
-.sll:hover{border-color:rgba(0,122,255,.3);transform:translateX(4px)}
+.sll:hover{border-color:rgba(37,99,235,.3);transform:translateX(4px)}
 .sln{display:flex;align-items:center;justify-content:center;width:52px;background:var(--cd);border-right:1px solid var(--bd);font-family:var(--m);font-size:12px;font-weight:700;color:var(--bl)}
 .slc{padding:20px 24px;flex:1}.slc strong{font-size:15px;display:block;margin-bottom:4px}.slc span{font-size:13px;color:var(--tx2)}
 
-/* ROADMAP */
 .rm{display:flex;gap:0;overflow-x:auto}
 .ri{flex:1;min-width:150px;padding:24px 16px;background:var(--sf);border:1px solid var(--bd);text-align:center;transition:all .2s}
 .ri:first-child{border-radius:12px 0 0 12px}.ri:last-child{border-radius:0 12px 12px 0}
@@ -103,9 +95,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,251,252,
 .rv{font-family:var(--m);font-size:15px;font-weight:700;margin-bottom:4px}
 .rn{font-size:13px;margin-bottom:10px;color:var(--tx2)}
 .rss{font-size:11px;padding:3px 12px;border-radius:100px;display:inline-block}
-.rss.d{background:rgba(52,199,89,.12);color:var(--gr)}.rss.c{background:rgba(0,122,255,.12);color:var(--bl)}.rss.f{background:var(--cd);color:var(--tx3)}
+.rss.d{background:rgba(22,163,74,.12);color:var(--gr)}.rss.c{background:rgba(37,99,235,.12);color:var(--bl)}.rss.f{background:var(--cd);color:var(--tx3)}
 
-/* INSTALL */
 .inst{background:var(--sf);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
 .inst-h{background:var(--cd);padding:16px 24px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
 .inst-h span{font-size:12px;color:var(--tx2);font-family:var(--m)}
@@ -116,38 +107,44 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(250,251,252,
 .icp{background:var(--cd);border:1px solid var(--bd);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--tx2);cursor:pointer;font-family:var(--f);transition:all .15s}
 .icp:hover{border-color:var(--bl);color:var(--bl)}
 
-/* FOOTER */
+/* DOCS */
+.dgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.dcard{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:28px;transition:all .2s}
+.dcard:hover{border-color:rgba(37,99,235,.2);transform:translateY(-2px)}
+.dcard h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.dcard p{font-size:13px;color:var(--tx2);line-height:1.6}
+.dcard .dl{display:flex;gap:8px;margin-top:12px}
+.dcard .dl a{font-size:12px;color:var(--bl);font-weight:500}
+
+/* PROVIDERS */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pcard{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:28px;text-align:center;transition:all .2s}
+.pcard:hover{border-color:rgba(37,99,235,.2)}
+.pcard h3{font-size:18px;font-weight:700;margin-bottom:4px}
+.pcard .pm2{font-size:12px;color:var(--tx3);margin-bottom:16px;font-family:var(--m)}
+.pcard .pp2{font-size:36px;font-weight:800;color:var(--bl);margin-bottom:4px}
+.pcard .pl2{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px}
+
 footer{border-top:1px solid var(--bd);padding:48px 24px;text-align:center}
 .fll{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:16px}
-.fll span{font-size:15px;font-weight:700}
-.fll .v{color:var(--tx3);font-size:12px;font-weight:400}
+.fll img{height:24px}.fll span{font-size:15px;font-weight:700}
 .flk{display:flex;gap:24px;justify-content:center;margin-bottom:12px}
 .flk a{color:var(--tx2);font-size:13px;transition:color .15s}
 .flk a:hover{color:var(--tx)}
-.fcp{font-size:12px;color:var(--tx3)}
-.fcp a{color:var(--bl)}
+.fcp{font-size:12px;color:var(--tx3)}.fcp a{color:var(--bl)}
 
-/* ANIMATIONS */
 @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 .anim{opacity:0;animation:fadeUp .6s ease forwards}
-.anim.d1{animation-delay:.1s}.anim.d2{animation-delay:.2s}.anim.d3{animation-delay:.3s}.anim.d4{animation-delay:.4s}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}.d4{animation-delay:.4s}
 
-/* RESPONSIVE */
-@media(max-width:768px){
-  nav{padding:0 16px}.nr{display:none}
-  .hero h1{font-size:36px;letter-spacing:-2px}
-  .sts{flex-direction:column;align-items:center}
-  .fg{grid-template-columns:1fr}
-  .rm{flex-direction:column}
-  .ri:first-child{border-radius:12px 12px 0 0}.ri:last-child{border-radius:0 0 12px 12px}
-}
+@media(max-width:768px){nav{padding:0 16px}.nr{display:none}.hero h1{font-size:36px;letter-spacing:-2px}.sts{flex-direction:column;align-items:center}.fg,.dgrid,.pgrid{grid-template-columns:1fr}.rm{flex-direction:column}.ri:first-child{border-radius:12px 12px 0 0}.ri:last-child{border-radius:0 0 12px 12px}}
 </style>
 </head>
 <body>
 
 <nav>
-<div class="nl">WRAP NEBULA</div>
-<div class="nr"><a href="#features">Features</a><a href="#architecture">Architecture</a><a href="#compare">Compare</a><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="#install" class="nbb">Install</a></div>
+<div class="nl"><img src="media/logo-light.png" alt="WRAP"> WRAP NEBULA</div>
+<div class="nr"><a href="#features">Features</a><a href="#docs">Docs</a><a href="#compare">Compare</a><a href="#providers">Providers</a><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="#install" class="nbb">Install</a></div>
 </nav>
 
 <section class="hero">
@@ -162,7 +159,7 @@ footer{border-top:1px solid var(--bd);padding:48px 24px;text-align:center}
 <div class="st"><div class="stn">0</div><div class="stl">API Keys</div></div>
 </div>
 <div class="tw anim" style="animation-delay:.5s">
-<div class="twb"><div class="tdd r"></div><div class="tdd y"></div><div class="tdd g"></div><span class="twt">nebula</span></div>
+<div class="twb"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="twt">nebula</span></div>
 <div class="twc" id="term"></div>
 </div>
 </section>
@@ -171,35 +168,47 @@ footer{border-top:1px solid var(--bd);padding:48px 24px;text-align:center}
 <h2>What it does.</h2>
 <p class="sub">Security-first. Every component independent. Compromising one layer does not compromise the others.</p>
 <div class="fg">
-<div class="fc"><div class="ict b">V8</div><h3>Sandbox</h3><p>Code runs in an isolated environment. Temp directory, stripped environment, 128MB memory, 30-second timeout.</p></div>
-<div class="fc"><div class="ict p">25519</div><h3>Audit Trail</h3><p>Every action is cryptographically signed. Verify the entire history with one function call. Immutable.</p></div>
-<div class="fc"><div class="ict g">INJ</div><h3>Sanitizer</h3><p>Prompt injection, SQL injection, XSS detected and blocked. PII auto-redacted before reaching the LLM.</p></div>
-<div class="fc"><div class="ict b">LOC</div><h3>100% Private</h3><p>Ollama runs on your machine. No data leaves your computer. No API keys needed. Free forever.</p></div>
-<div class="fc"><div class="ict p">MUL</div><h3>Multi-Provider</h3><p>Works with Ollama, Claude, and GPT-4. Auto-detected from config. Switch anytime.</p></div>
-<div class="fc"><div class="ict g">PKG</div><h3>Plugins</h3><p>Create, install, and share skills. Hash-verified before loading. <code>nebula skill create</code></p></div>
-<div class="fc"><div class="ict b">SQL</div><h3>Memory</h3><p>Conversations stored in SQLite. Never transmitted. Never synced. Your data stays on your machine.</p></div>
-<div class="fc"><div class="ict p">SOL</div><h3>SOUL.md</h3><p>Agent personality in simple markdown. No YAML schemas. No JSON configs. Just markdown.</p></div>
-<div class="fc"><div class="ict g">NET</div><h3>Multi-Agent</h3><p>Ed25519-signed message bus. Task delegation based on skills. Each agent has its own identity.</p></div>
+<div class="fc"><div class="ict b">V8</div><h3>Sandbox</h3><p>Code runs isolated. Temp directory, stripped environment, 128MB memory, 30-second timeout.</p></div>
+<div class="fc"><div class="ict p">SIG</div><h3>Audit Trail</h3><p>Ed25519-signed. Verify entire history with one call. Immutable, hash-chained log.</p></div>
+<div class="fc"><div class="ict g">FLT</div><h3>Sanitizer</h3><p>Prompt injection, SQL, XSS blocked. PII auto-redacted before reaching the LLM.</p></div>
+<div class="fc"><div class="ict o">LOC</div><h3>100% Private</h3><p>Ollama on your machine. No data leaves. No API keys needed. Free forever.</p></div>
+<div class="fc"><div class="ict b">MLT</div><h3>Multi-Provider</h3><p>Ollama, Claude, GPT-4. Auto-detected from config. Switch anytime.</p></div>
+<div class="fc"><div class="ict p">PKG</div><h3>Plugins</h3><p>Create, install, share skills. Hash-verified. <code>nebula skill create</code></p></div>
+<div class="fc"><div class="ict g">SQL</div><h3>Memory</h3><p>SQLite. Never transmitted. Never synced. Your data stays on your machine.</p></div>
+<div class="fc"><div class="ict o">SOL</div><h3>SOUL.md</h3><p>Agent personality in markdown. No YAML. No JSON. Just markdown.</p></div>
+<div class="fc"><div class="ict b">NET</div><h3>Multi-Agent</h3><p>Signed message bus. Task delegation. Each agent has its own identity.</p></div>
+</div></section>
+
+<section class="sec" id="docs">
+<h2>Documentation.</h2>
+<p class="sub">Everything you need to get started, understand the architecture, and contribute.</p>
+<div class="dgrid">
+<div class="dcard"><h3>Quick Start</h3><p>Get up and running in under 2 minutes. Install, authenticate, and start your first agent.</p><div class="dl"><a href="#install">Install guide</a></div></div>
+<div class="dcard"><h3>Architecture</h3><p>Understand the message pipeline, security layers, and how every component fits together.</p><div class="dl"><a href="#architecture">Read more</a></div></div>
+<div class="dcard"><h3>Skills Reference</h3><p>All 14 skills documented with parameters, examples, and sandbox details.</p><div class="dl"><a href="https://github.com/Vitalcheffe/Wrap/tree/main/packages/core/src/skills/definitions">GitHub</a></div></div>
+<div class="dcard"><h3>Security Model</h3><p>V8 sandbox, Ed25519 audit trail, input sanitizer, Rust Governor — how each layer works.</p><div class="dl"><a href="#security">Read more</a></div></div>
+<div class="dcard"><h3>CLI Reference</h3><p>All nebula commands: init, start, stop, doctor, auth, skill, agents.</p><div class="dl"><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a></div></div>
+<div class="dcard"><h3>Contributing</h3><p>How to add skills, fix bugs, improve docs, and submit pull requests.</p><div class="dl"><a href="https://github.com/Vitalcheffe/Wrap/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a></div></div>
+<div class="dcard"><h3>VS Code Extension</h3><p>Install the extension, connect to your agent, and code with AI assistance.</p><div class="dl"><a href="https://github.com/Vitalcheffe/Wrap/releases">Releases</a></div></div>
+<div class="dcard"><h3>Plugin System</h3><p>Create custom skills, share with the community, and extend your agent.</p><div class="dl"><a href="https://github.com/Vitalcheffe/Wrap/tree/main/examples">Examples</a></div></div>
 </div></section>
 
 <section class="sec" id="architecture">
 <h2>Message pipeline.</h2>
 <div class="pl">
 <div class="ps2 bl"><span class="pn">01</span><span class="pm">Input</span><span class="pd2">Telegram / CLI / VS Code</span></div>
-<div class="ps2"><span class="pn">02</span><span class="pm">Sanitizer</span><span class="pd2">Injection + PII detection</span></div>
-<div class="ps2 pp"><span class="pn">03</span><span class="pm">Governor</span><span class="pd2">Permissions + sandbox + audit sign</span></div>
-<div class="ps2"><span class="pn">04</span><span class="pm">SOUL.md</span><span class="pd2">Personality + skills + rules</span></div>
-<div class="ps2"><span class="pn">05</span><span class="pm">LLM Provider</span><span class="pd2">Ollama / Claude / GPT-4</span></div>
-<div class="ps2"><span class="pn">06</span><span class="pm">Skill Executor</span><span class="pd2">14 sandboxed skills</span></div>
-<div class="ps2"><span class="pn">07</span><span class="pm">Memory</span><span class="pd2">SQLite — local only</span></div>
-<div class="ps2 bl"><span class="pn">08</span><span class="pm">Response</span><span class="pd2">Signed · audited · delivered</span></div>
+<div class="ps2"><span class="pn">02</span><span class="pm">Sanitizer</span><span class="pd2">Injection + PII</span></div>
+<div class="ps2 pp"><span class="pn">03</span><span class="pm">Governor</span><span class="pd2">Permissions + sandbox + audit</span></div>
+<div class="ps2"><span class="pn">04</span><span class="pm">SOUL.md</span><span class="pd2">Personality + skills</span></div>
+<div class="ps2"><span class="pn">05</span><span class="pm">LLM</span><span class="pd2">Ollama / Claude / GPT</span></div>
+<div class="ps2"><span class="pn">06</span><span class="pm">Skills</span><span class="pd2">14 sandboxed</span></div>
+<div class="ps2"><span class="pn">07</span><span class="pm">Memory</span><span class="pd2">SQLite — local</span></div>
+<div class="ps2 bl"><span class="pn">08</span><span class="pm">Response</span><span class="pd2">Signed · audited</span></div>
 </div></section>
 
 <section class="sec" id="compare">
 <h2>Comparison.</h2>
-<table class="cmp">
-<thead><tr><th></th><th>Kilo</th><th>Cline</th><th>Cursor</th><th class="hh">WRAP</th></tr></thead>
-<tbody>
+<table class="cmp"><thead><tr><th></th><th>Kilo</th><th>Cline</th><th>Cursor</th><th class="hh">WRAP</th></tr></thead><tbody>
 <tr><td>Sandbox</td><td class="nn">no</td><td class="nn">no</td><td class="nn">no</td><td class="yy">V8</td></tr>
 <tr><td>Audit trail</td><td class="nn">no</td><td class="nn">no</td><td class="nn">no</td><td class="yy">Ed25519</td></tr>
 <tr><td>PII redaction</td><td class="nn">no</td><td class="nn">no</td><td class="nn">no</td><td class="yy">Auto</td></tr>
@@ -208,33 +217,25 @@ footer{border-top:1px solid var(--bd);padding:48px 24px;text-align:center}
 <tr><td>Telegram</td><td class="nn">no</td><td class="nn">no</td><td class="nn">no</td><td class="yy">Built-in</td></tr>
 </tbody></table></section>
 
-<section class="sec">
+<section class="sec" id="providers">
+<h2>Works with any model.</h2>
+<p class="sub">Auto-detected from your config. Switch anytime. No vendor lock-in.</p>
+<div class="pgrid">
+<div class="pcard"><h3>Ollama</h3><div class="pm2">Local · Free · Private</div><div class="pp2">$0</div><div class="pl2">per month forever</div></div>
+<div class="pcard"><h3>Claude</h3><div class="pm2">Anthropic · API key</div><div class="pp2">~$3</div><div class="pl2">per hour intensive</div></div>
+<div class="pcard"><h3>GPT-4</h3><div class="pm2">OpenAI · API key</div><div class="pp2">~$5</div><div class="pl2">per hour intensive</div></div>
+</div></section>
+
+<section class="sec" id="security">
 <h2>Security.</h2>
 <p class="sub">Independent layers. Each one protects against a different class of failure.</p>
 <div class="sl">
-<div class="sll"><div class="sln">01</div><div class="slc"><strong>Input Sanitizer</strong><span>Prompt injection (10 patterns), SQL injection (6), XSS (5). PII redacted.</span></div></div>
-<div class="sll"><div class="sln">02</div><div class="slc"><strong>Rust Governor</strong><span>Separate process with own memory. Binary-level policy enforcement.</span></div></div>
-<div class="sll"><div class="sln">03</div><div class="slc"><strong>V8 Sandbox</strong><span>Temp directory. Minimal PATH. No network. 128MB. 30s timeout.</span></div></div>
-<div class="sll"><div class="sln">04</div><div class="slc"><strong>Ed25519 Trail</strong><span>Append-only, hash-chained, signed. Verify all with one function call.</span></div></div>
-<div class="sll"><div class="sln">05</div><div class="slc"><strong>SQLite Memory</strong><span>Local only. Never transmitted. Never synced. Period.</span></div></div>
+<div class="sll"><div class="sln">01</div><div class="slc"><strong>Input Sanitizer</strong><span>10 prompt injection, 6 SQL, 5 XSS patterns. PII redacted.</span></div></div>
+<div class="sll"><div class="sln">02</div><div class="slc"><strong>Rust Governor</strong><span>Separate process. Binary-level policy enforcement.</span></div></div>
+<div class="sll"><div class="sln">03</div><div class="slc"><strong>V8 Sandbox</strong><span>Temp dir. No network. 128MB. 30s timeout.</span></div></div>
+<div class="sll"><div class="sln">04</div><div class="slc"><strong>Ed25519 Trail</strong><span>Append-only, hash-chained, signed. Verify all.</span></div></div>
+<div class="sll"><div class="sln">05</div><div class="slc"><strong>SQLite Memory</strong><span>Local only. Never transmitted. Period.</span></div></div>
 </div></section>
-
-<section class="sec">
-<h2>Code.</h2>
-<div class="cb"><div class="ch"><span>code.run — sandbox</span><span>V8 isolate</span></div>
-<pre><span class="cm">// Temp dir · stripped env · 128MB · 30s</span>
-<span class="kw">const</span> proc = <span class="fnn">spawn</span>(cmd, args, {
-  <span class="fnn">cwd</span>: <span class="fnn">path.join</span>(sandbox, <span class="st">'workspace'</span>),
-  <span class="fnn">env</span>: { <span class="fnn">PATH</span>: <span class="st">'/usr/bin:/bin'</span>, <span class="fnn">HOME</span>: sandbox },
-  <span class="fnn">timeout</span>: <span class="nu">30000</span>,
-});</pre></div>
-<div class="cb"><div class="ch"><span>audit/trail.ts — signing</span><span>Ed25519</span></div>
-<pre><span class="kw">const</span> { privateKey } = crypto.<span class="fnn">generateKeyPairSync</span>(<span class="st">'ed25519'</span>);
-<span class="fnn">log</span>(action, input, output) {
-  <span class="kw">const</span> sig = crypto.<span class="fnn">sign</span>(<span class="kw">null</span>, <span class="fnn">Buffer.from</span>(hash), privateKey);
-  fs.<span class="fnn">appendFileSync</span>(logPath, <span class="fnn">JSON.stringify</span>(entry));
-}</pre></div>
-</section>
 
 <section class="sec">
 <h2>Roadmap.</h2>
@@ -250,7 +251,7 @@ footer{border-top:1px solid var(--bd);padding:48px 24px;text-align:center}
 <section class="sec" id="install">
 <h2>Install.</h2>
 <div class="inst">
-<div class="inst-h"><div class="tdd r"></div><div class="tdd y"></div><div class="tdd g"></div><span>install.sh</span></div>
+<div class="inst-h"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span>install.sh</span></div>
 <div class="inst-b">
 <div class="il"><span class="icp" onclick="navigator.clipboard.writeText('nebula auth login anthropic')">Copy</span><span class="icmd">$ nebula auth login anthropic</span></div>
 <div class="il"><span class="icp" onclick="navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | bash')">Copy</span><span class="icmd">$ curl ...install.sh | bash</span></div>
@@ -259,47 +260,29 @@ footer{border-top:1px solid var(--bd);padding:48px 24px;text-align:center}
 </section>
 
 <footer>
-<div class="fll"><span>WRAP NEBULA</span><span class="v">v8.0</span></div>
-<div class="flk"><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="https://github.com/Vitalcheffe/Wrap/issues">Issues</a><a href="https://github.com/Vitalcheffe/Wrap/blob/main/CONTRIBUTING.md">Contribute</a></div>
+<div class="fll"><img src="media/logo-light.png" alt="WRAP"><span>WRAP NEBULA</span></div>
+<div class="flk"><a href="https://github.com/Vitalcheffe/Wrap">GitHub</a><a href="https://github.com/Vitalcheffe/Wrap/issues">Issues</a><a href="https://github.com/Vitalcheffe/Wrap/blob/main/CONTRIBUTING.md">Contribute</a><a href="https://github.com/Vitalcheffe/Wrap/releases">Releases</a></div>
 <div class="fcp"><a href="https://github.com/Vitalcheffe">VitalCheffe</a> · 16 · Casablanca · MIT</div>
 </footer>
 
 <script>
-// Terminal typing animation
 const lines=[
   {t:"$ nebula start",c:"pk"},
   {t:" Ollama connected · llama3",c:"ps"},
   {t:" Aria is live · Port 3001",c:"ps"},
   {t:" Audit trail active · Ed25519",c:"ps"},
+  {t:" 14 skills loaded",c:"ps"},
+  {t:" Session token created",c:"ps"},
+  {t:" War Room: localhost:3001?token=...",c:"ps"},
   {t:" ──────────────────",c:"pd"},
   {t:"You: how does DNS work",c:"pk"},
   {t:"Aria: DNS translates domain names to IP addresses.",c:"pi"},
 ];
-const el=document.getElementById("term");
-let li=0;
-function typeLine(){
-  if(li>=lines.length)return;
-  const l=lines[li];
-  const d=document.createElement("div");
-  d.className=l.c;
-  el.appendChild(d);
-  let ci=0;
-  const iv=setInterval(()=>{
-    d.textContent=l.t.slice(0,ci+1);
-    ci++;
-    if(ci>=l.t.length){clearInterval(iv);li++;setTimeout(typeLine,400);}
-  },30);
-}
+const el=document.getElementById("term");let li=0;
+function typeLine(){if(li>=lines.length)return;const l=lines[li];const d=document.createElement("div");d.className=l.c;el.appendChild(d);let ci=0;const iv=setInterval(()=>{d.textContent=l.t.slice(0,ci+1);ci++;if(ci>=l.t.length){clearInterval(iv);li++;setTimeout(typeLine,300);}},25);}
 setTimeout(typeLine,1000);
-
-// Scroll animations
-const obs=new IntersectionObserver((es)=>{
-  es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform="translateY(0)";}});
-},{threshold:.1});
-document.querySelectorAll(".fc,.sll,.ri,.cb").forEach(el=>{
-  el.style.opacity=0;el.style.transform="translateY(20px)";el.style.transition="all .5s ease";
-  obs.observe(el);
-});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform="translateY(0)";}});},{threshold:.1});
+document.querySelectorAll(".fc,.sll,.ri,.cb,.dcard,.pcard").forEach(el=>{el.style.opacity=0;el.style.transform="translateY(20px)";el.style.transition="all .5s ease";obs.observe(el);});
 </script>
 </body>
 </html>
