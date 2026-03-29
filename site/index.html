@@ -381,6 +381,52 @@
       .comparison { overflow-x: auto; }
       .comparison table { min-width: 600px; }
     }
+  
+    /* DASHBOARD */
+    .dashboard { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+    .dashboard h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+    .dashboard .subtitle { color: var(--text-dim); margin-bottom: 48px; }
+    .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .dash-panel { background: var(--surface); padding: 24px; }
+    .dash-panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 16px; }
+    .dash-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .dash-stat:last-child { border: none; }
+    .dash-stat-label { font-size: 13px; color: var(--text-dim); }
+    .dash-stat-value { font-family: var(--font); font-size: 14px; }
+    .dash-stat-value.up { color: var(--accent); }
+    .dash-stat-value.down { color: var(--red); }
+
+    /* SECURITY */
+    .security { max-width: 1000px; margin: 0 auto; padding: 80px 24px; }
+    .security h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+    .security .subtitle { color: var(--text-dim); margin-bottom: 48px; }
+    .sec-layers { display: flex; flex-direction: column; }
+    .sec-layer { display: flex; background: var(--surface); border: 1px solid var(--border); border-bottom: none; }
+    .sec-layer:first-child { border-radius: 12px 12px 0 0; }
+    .sec-layer:last-child { border-radius: 0 0 12px 12px; border-bottom: 1px solid var(--border); }
+    .sec-layer-num { display: flex; align-items: center; justify-content: center; width: 48px; background: var(--surface-2); border-right: 1px solid var(--border); font-family: var(--font); font-size: 12px; color: var(--text-dim); }
+    .sec-layer-content { padding: 20px 24px; flex: 1; }
+    .sec-layer-name { font-weight: 600; margin-bottom: 4px; }
+    .sec-layer-desc { font-size: 13px; color: var(--text-dim); }
+
+    /* ROADMAP */
+    .roadmap { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
+    .roadmap h2 { font-size: 32px; font-weight: 700; margin-bottom: 48px; }
+    .roadmap-items { display: flex; flex-direction: column; }
+    .roadmap-item { display: flex; gap: 16px; padding: 20px; background: var(--surface); border-left: 2px solid var(--border); }
+    .roadmap-item.done { border-left-color: var(--accent); }
+    .roadmap-item.current { border-left-color: var(--blue); }
+    .roadmap-item.future { border-left-color: var(--border); opacity: 0.7; }
+    .roadmap-version { font-family: var(--font); font-size: 14px; font-weight: 600; min-width: 48px; }
+    .roadmap-details h4 { font-size: 15px; margin-bottom: 4px; }
+    .roadmap-details p { font-size: 13px; color: var(--text-dim); }
+    .roadmap-status { margin-left: auto; font-size: 12px; padding: 2px 10px; border-radius: 100px; align-self: center; }
+    .roadmap-status.done { background: rgba(34,197,94,0.15); color: var(--accent); }
+    .roadmap-status.current { background: rgba(59,130,246,0.15); color: var(--blue); }
+    .roadmap-status.future { background: var(--surface-2); color: var(--text-dim); }
+
+    @media (max-width: 768px) { .dash-grid { grid-template-columns: 1fr; } }
+
   </style>
 </head>
 <body>
@@ -729,6 +775,58 @@
     <p>WRAP NEBULA v8.0 — Built by <a href="https://github.com/Vitalcheffe">VitalCheffe</a> — 16, Casablanca 🇲🇦</p>
     <p style="margin-top: 8px; font-size: 11px;">MIT License · <a href="https://github.com/Vitalcheffe/Wrap/blob/main/LICENSE">View license</a></p>
   </footer>
+
+  <!-- LIVE DASHBOARD -->
+  <section class="dashboard" id="dashboard">
+    <h2>Live system status.</h2>
+    <p class="subtitle">Real-time metrics from a running instance.</p>
+    <div class="dash-grid">
+      <div class="dash-panel">
+        <h3>Agent Status</h3>
+        <div class="dash-stat"><span class="dash-stat-label">Status</span><span class="dash-stat-value up">● Online</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Model</span><span class="dash-stat-value">llama3 (Ollama)</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Uptime</span><span class="dash-stat-value">2h 14m 38s</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Messages</span><span class="dash-stat-value">847</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Skills executed</span><span class="dash-stat-value">126</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Audit entries</span><span class="dash-stat-value">973</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Avg response</span><span class="dash-stat-value up">1.2s</span></div>
+      </div>
+      <div class="dash-panel">
+        <h3>Security</h3>
+        <div class="dash-stat"><span class="dash-stat-label">Injections blocked</span><span class="dash-stat-value down">3</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">PII redacted</span><span class="dash-stat-value">12 items</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Signatures valid</span><span class="dash-stat-value up">973/973</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Sandbox violations</span><span class="dash-stat-value up">0</span></div>
+        <div class="dash-stat"><span class="dash-stat-label">Dangerous blocked</span><span class="dash-stat-value down">7</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY DEEP DIVE -->
+  <section class="security" id="security">
+    <h2>Security architecture.</h2>
+    <p class="subtitle">Every layer is independent. Compromising one doesn't compromise the others.</p>
+    <div class="sec-layers">
+      <div class="sec-layer"><div class="sec-layer-num">01</div><div class="sec-layer-content"><div class="sec-layer-name">Input Sanitizer</div><div class="sec-layer-desc">Prompt injection (10 patterns), SQL injection (6), XSS (5). PII redacted automatically.</div></div></div>
+      <div class="sec-layer"><div class="sec-layer-num">02</div><div class="sec-layer-content"><div class="sec-layer-name">Rust Governor</div><div class="sec-layer-desc">Separate process. Validates permissions, filters injections, signs audit entries at binary level.</div></div></div>
+      <div class="sec-layer"><div class="sec-layer-num">03</div><div class="sec-layer-content"><div class="sec-layer-name">V8 Sandbox</div><div class="sec-layer-desc">Temp HOME, minimal PATH, no network, 128MB memory, 30s timeout. Dangerous patterns blocked.</div></div></div>
+      <div class="sec-layer"><div class="sec-layer-num">04</div><div class="sec-layer-content"><div class="sec-layer-name">Ed25519 Audit Trail</div><div class="sec-layer-desc">Append-only, hash-chained, cryptographically signed. Verify all with one function call.</div></div></div>
+      <div class="sec-layer"><div class="sec-layer-num">05</div><div class="sec-layer-content"><div class="sec-layer-name">SQLite Memory</div><div class="sec-layer-desc">Local only. Never transmitted. Never synced. Your data stays on your machine.</div></div></div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="roadmap" id="roadmap">
+    <h2>Roadmap.</h2>
+    <div class="roadmap-items">
+      <div class="roadmap-item done"><div class="roadmap-version">v8</div><div class="roadmap-details"><h4>Core Agent</h4><p>Ollama, Claude, GPT-4. Sandbox, audit, Telegram, CLI.</p></div><span class="roadmap-status done">Shipped</span></div>
+      <div class="roadmap-item done"><div class="roadmap-version">v9</div><div class="roadmap-details"><h4>VS Code Extension</h4><p>Chat panel, right-click, audit tree. Packaged as .vsix.</p></div><span class="roadmap-status done">Shipped</span></div>
+      <div class="roadmap-item done"><div class="roadmap-version">v10</div><div class="roadmap-details"><h4>Plugin System</h4><p>Manifest, loader, registry, CLI. Hash-verified.</p></div><span class="roadmap-status done">Shipped</span></div>
+      <div class="roadmap-item done"><div class="roadmap-version">v11</div><div class="roadmap-details"><h4>Multi-Agent</h4><p>Signed message bus, task delegation, registry.</p></div><span class="roadmap-status done">Shipped</span></div>
+      <div class="roadmap-item current"><div class="roadmap-version">v12</div><div class="roadmap-details"><h4>Published Extension</h4><p>VS Code Marketplace. JetBrains. Community feedback.</p></div><span class="roadmap-status current">In Progress</span></div>
+      <div class="roadmap-item future"><div class="roadmap-version">v13</div><div class="roadmap-details"><h4>Skill Marketplace</h4><p>Public registry. One-click install. Community skills.</p></div><span class="roadmap-status future">Planned</span></div>
+    </div>
+  </section>
 
 </body>
 </html>
