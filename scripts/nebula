@@ -306,6 +306,24 @@ SKILL
   esac
 }
 
+cmd_agents() {
+  print_banner
+  echo -e "${CYAN}Multi-Agent System${NC}"
+  echo ""
+  echo -e "${YELLOW}Coming in V11.1 — inter-agent task delegation${NC}"
+  echo ""
+  echo "Planned commands:"
+  echo "  nebula agents list       List known agents"
+  echo "  nebula agents register   Register a remote agent"
+  echo "  nebula agents delegate   Delegate a task to another agent"
+  echo ""
+  echo "Architecture:"
+  echo "  • Each agent has its own SOUL.md and identity"
+  echo "  • Ed25519-signed message bus"
+  echo "  • Automatic task delegation based on skills"
+  echo ""
+}
+
 cmd_status() {
   print_banner
   if [[ -f "$ENV_FILE" ]]; then
@@ -330,6 +348,7 @@ case "${1:-help}" in
   start)   cmd_start ;;
   status)  cmd_status ;;
   skill)   cmd_skill "$@" ;;
+  agents)  cmd_agents ;;
   help|*)
     print_banner
     echo "Usage: nebula <command>"
@@ -339,6 +358,7 @@ case "${1:-help}" in
     echo "  start    Start the agent"
     echo "  status   Show configuration"
     echo "  skill    Manage skills (list/install/remove/create)"
+    echo "  agents   Multi-agent system info"
     echo "  help     Show this help"
     ;;
 esac
