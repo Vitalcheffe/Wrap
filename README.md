@@ -1,24 +1,35 @@
-<p align="center">
-  <img src="docs/media/banner-black.PNG" alt="WRAP NEBULA" width="600">
-</p>
-
 # WRAP NEBULA
 
-The AI agent you can actually verify.
+<p align="center">
+  <b>The AI agent you can actually verify.</b><br>
+  <i>Local-first. Zero-trust. Auditable by design.</i>
+</p>
 
-Local-first. Zero-trust. Auditable by design.
+<p align="center">
+  <img src="https://img.shields.io/badge/Rust-Governor-da5a2a?logo=rust" />
+  <img src="https://img.shields.io/badge/TypeScript-Agent-3178C6?logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Sandbox-V8%20Isolate-green" />
+  <img src="https://img.shields.io/badge/Audit-Ed25519-purple" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
+</p>
 
 ---
 
-## The problem
-
 Every AI coding agent sends your code to the cloud. No sandbox. No audit trail. No cryptographic guarantees. You are trusting strangers with your proprietary code.
-
-Kilo Code raised $8M. Cline has 5M installs. Cursor is worth $9B. They all do the same thing: send your code to a server you don't control.
 
 WRAP NEBULA does the opposite.
 
-## What makes it different
+---
+
+## The Problem
+
+Kilo Code raised $8M. Cline has 5M installs. Cursor is worth $9B. They all do the same thing: send your code to a server you don't control.
+
+WRAP NEBULA is local-first. Your code never leaves your machine. Every action is signed, sandboxed, and auditable.
+
+---
+
+## What Makes It Different
 
 | | Kilo | Cline | Cursor | **WRAP** |
 |---|---|---|---|---|
@@ -29,9 +40,26 @@ WRAP NEBULA does the opposite.
 | Free forever | no | no | no | **Yes** |
 | Telegram | no | no | no | **Built-in** |
 
-## Install
+---
 
-```
+## How It Works
+
+Every message flows through a pipeline where compromising one layer does not compromise the others:
+
+1. **Input** — Telegram, CLI, VS Code
+2. **Sanitizer** — blocks injection, redacts PII
+3. **Rust Governor** — separate process, policy enforcement
+4. **SOUL.md** — agent personality in markdown
+5. **LLM** — Ollama / Claude / GPT-4
+6. **Skills** — sandboxed executors
+7. **Memory** — SQLite, local only
+8. **Response** — signed, auditable
+
+---
+
+## Quick Start
+
+```bash
 # Authenticate
 nebula auth login anthropic
 
@@ -42,67 +70,20 @@ curl -fsSL https://raw.githubusercontent.com/Vitalcheffe/Wrap/main/install.sh | 
 ollama serve && ollama pull llama3 && nebula start
 ```
 
-## How it works
-
-Every message flows through a pipeline where compromising one layer does not compromise the others:
-
-1. Input — Telegram, CLI, VS Code
-2. Sanitizer — blocks injection, redacts PII
-3. Rust Governor — separate process, policy enforcement
-4. SOUL.md — agent personality in markdown
-5. LLM — Ollama / Claude / GPT-4
-6. Skills — 14 sandboxed executors
-7. Memory — SQLite, local only
-8. Response — signed, audited
+---
 
 ## Skills
 
+14 sandboxed executors — each runs in a V8 isolate with no filesystem or network access unless explicitly granted:
+
 - web.search — DuckDuckGo scraping, no API key
-- files.read/write/list — path-restricted filesystem
-- code.run — V8 sandboxed execution
-- code.edit — diff-based editing with backup
-- code.search — grep, find, symbol search
-- terminal.run — shell with safety checks
-- reminder.set/list — natural language dates
-- git.status — structured git output
-- calendar.read — local .ics reader
-- email.summary — local .mbox reader
-- project.context — smart file inclusion
-
-## CLI
-
-- nebula init — setup wizard
-- nebula start — start the agent
-- nebula stop — stop the agent
-- nebula status — show status
-- nebula doctor — health check
-- nebula auth login — authenticate
-- nebula auth list — show credentials
-- nebula skill create — create a skill
-
-## Security
-
-Input Sanitizer: 10 prompt injection, 6 SQL, 5 XSS patterns. PII redacted.
-
-V8 Sandbox: temp dir, no network, 128MB, 30s timeout.
-
-Ed25519 Audit Trail: every action signed. Hash-chained. Verify all.
-
-SQLite Memory: local only. Never transmitted.
-
-## Testing
-
-```
-cd packages/core
-npm install
-npx vitest run    # 46/46 passing
-npx tsc --noEmit  # 0 errors
-```
-
-## License
-
-MIT
+- code.execute — sandboxed Python/JS/TS
+- file.read/write — scoped to workspace
+- system.info — CPU, memory, disk
+- ...and more
 
 ---
 
-Built by VitalCheffe — 16, Casablanca, Morocco
+## License
+
+MIT — free forever.
